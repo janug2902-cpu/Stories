@@ -1,3 +1,4 @@
+import React, { Suspense } from 'react'
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
@@ -20,6 +21,12 @@ export const metadata: Metadata = {
     'An exclusive adult realm for fantasy, taboo romances, and provocative stories. Read, write, and create with community authors and state-of-the-art AI.',
 }
 
+function NavbarSkeleton() {
+  return (
+    <header className="sticky top-0 z-40 h-16 border-b border-zinc-800/80 bg-[#09090b]/85 backdrop-blur-xl" />
+  )
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -34,8 +41,10 @@ export default function RootLayout({
         {/* Unclosable 18+ Age Verification Modal */}
         <AgeGateModal />
 
-        {/* Global Navigation Bar */}
-        <Navbar />
+        {/* Global Navigation Bar wrapped in Suspense for Next 16 PPR */}
+        <Suspense fallback={<NavbarSkeleton />}>
+          <Navbar />
+        </Suspense>
 
         {/* Page Content */}
         <div className="flex-1 flex flex-col">{children}</div>
