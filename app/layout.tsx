@@ -21,7 +21,11 @@ export const metadata: Metadata = {
   description:
     'An exclusive adult realm for fantasy, taboo romances, and provocative stories. Read, write, and personalize your own tales on Kinkyomen.',
   icons: {
-    icon: '/logo.png',
+    icon: [
+      { url: '/logo.png', type: 'image/png' },
+      { url: '/favicon.ico' },
+    ],
+    shortcut: '/logo.png',
     apple: '/logo.png',
   },
 }
