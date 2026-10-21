@@ -124,3 +124,29 @@ body {
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
+
+/* Scroll-driven animations: story feed and cards smoothly ascend from down to up on scroll */
+@keyframes feedComeUpOnScroll {
+  0% {
+    opacity: 0;
+    transform: translateY(70px) scale(0.97);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  .feed-scroll-driven {
+    animation: feedComeUpOnScroll linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 28%;
+  }
+
+  .card-scroll-driven {
+    animation: feedComeUpOnScroll linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 24%;
+  }
+}

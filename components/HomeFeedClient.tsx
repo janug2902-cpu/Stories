@@ -96,12 +96,11 @@ export function HomeFeedClient({
     <div className="relative min-h-screen flex flex-col bg-[#09090b] text-[#f4f4f5]">
       <main className="flex-1 flex flex-col">
         {/* Hero Section */}
-        <section className="relative px-6 pt-12 pb-16 overflow-hidden text-center max-w-5xl mx-auto">
+        <section className="relative px-6 pt-16 pb-20 md:min-h-[72vh] flex flex-col justify-center items-center overflow-hidden text-center max-w-5xl mx-auto">
           {/* Subtle Ambient Glow */}
           <div className="absolute inset-0 -z-10 flex items-center justify-center">
             <div className="w-[500px] h-[280px] bg-rose-600/15 blur-[120px] rounded-full pointer-events-none" />
           </div>
-
 
           <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white mb-6 leading-tight">
             {t.heroTitle1} <br />
@@ -143,12 +142,34 @@ export function HomeFeedClient({
               <PenTool className="w-4 h-4 text-zinc-400" /> {t.heroBtnWrite}
             </Link>
           </div>
+
+          {/* Scroll Cue to Encourage Exploration */}
+          <div className="pt-12 flex flex-col items-center">
+            <a
+              href="#feed"
+              onClick={(e) => {
+                e.preventDefault()
+                const el = document.getElementById('feed')
+                if (el) {
+                  el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                }
+              }}
+              className="group inline-flex flex-col items-center gap-2 text-xs font-medium text-zinc-400 hover:text-rose-400 transition-colors cursor-pointer"
+            >
+              <span className="tracking-wide text-[11px] uppercase">
+                {lang === 'hi' ? 'कहानियां देखने के लिए नीचे स्क्रॉल करें' : 'Scroll down for stories feed'}
+              </span>
+              <div className="w-5 h-8 rounded-full border border-zinc-700 group-hover:border-rose-500/80 flex items-start justify-center p-1 transition-colors">
+                <div className="w-1 h-2 bg-rose-500 rounded-full animate-bounce" />
+              </div>
+            </a>
+          </div>
         </section>
 
         {/* Stories Feed Section with Smooth Scroll Reveal */}
         <section id="feed" className="px-4 sm:px-6 py-12 max-w-7xl mx-auto w-full scroll-mt-20">
           {/* Header & Filter Controls with Smooth Scroll Entrance */}
-          <ScrollReveal direction="up" duration={650}>
+          <ScrollReveal direction="up" distance={80} duration={800} once={false} className="feed-scroll-driven">
             <div className="mb-10 space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
@@ -237,9 +258,10 @@ export function HomeFeedClient({
                 <ScrollReveal
                   key={story.id}
                   direction="up"
+                  distance={60}
                   delay={(idx % 4) * 80}
-                  duration={650}
-                  className="h-full"
+                  duration={700}
+                  className="h-full card-scroll-driven"
                 >
                   <StoryCard story={story} />
                 </ScrollReveal>
