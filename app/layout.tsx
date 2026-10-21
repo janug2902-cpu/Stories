@@ -54,15 +54,15 @@ export default function RootLayout({
         >
           {/* Ambient Translucent Background Artwork */}
           <div
-            className="absolute inset-0 bg-cover bg-top sm:bg-center bg-no-repeat opacity-30 sm:opacity-35 filter brightness-95 contrast-110"
+            className="absolute inset-0 bg-cover bg-top sm:bg-center bg-no-repeat opacity-40 sm:opacity-45 filter brightness-100 contrast-110"
             style={{
               backgroundImage: `url('/background.png')`,
               backgroundAttachment: 'fixed',
             }}
           />
           {/* Soft dark vignette & gradient overlay to preserve contrast and readability */}
-          <div className="absolute inset-0 bg-gradient-to-b from-[#09090b]/80 via-[#09090b]/40 to-[#09090b]/90" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_25%,#09090b_85%)]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#09090b]/70 via-[#09090b]/25 to-[#09090b]/85" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_35%,#09090b_85%)]" />
         </div>
 
         <LanguageProvider>

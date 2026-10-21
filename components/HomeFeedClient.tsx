@@ -162,20 +162,20 @@ export function HomeFeedClient({
       <main className="relative z-10 flex-1 flex flex-col">
         {/* Hero Section */}
         <section className="relative px-6 pt-16 pb-20 md:min-h-[72vh] flex flex-col justify-center items-center overflow-hidden text-center max-w-5xl mx-auto">
-          {/* Ambient Crimson Centerpiece Glow */}
+          {/* Ambient Crimson Centerpiece Glow - subtle to let artwork shine */}
           <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none">
-            <div className="w-[420px] sm:w-[620px] h-[340px] bg-rose-600/20 blur-[130px] rounded-full" />
+            <div className="w-[420px] sm:w-[620px] h-[340px] bg-rose-600/10 blur-[140px] rounded-full" />
           </div>
 
           <div className="relative z-10 flex flex-col items-center">
-            <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white mb-6 leading-tight drop-shadow-md">
+            <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-white/85 mb-6 leading-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]">
               {t.heroTitle1} <br />
-              <span className="bg-gradient-to-r from-rose-400 via-rose-500 to-rose-600 bg-clip-text text-transparent crimson-glow-text">
+              <span className="bg-gradient-to-r from-rose-300/90 via-rose-400 to-rose-500/90 bg-clip-text text-transparent crimson-glow-text font-bold">
                 {t.heroTitle2}
               </span>
             </h1>
 
-            <p className="max-w-2xl mx-auto text-base sm:text-lg text-zinc-300 mb-8 leading-relaxed drop-shadow-sm">
+            <p className="max-w-2xl mx-auto text-base sm:text-lg text-zinc-300/80 mb-8 leading-relaxed font-normal drop-shadow-sm">
               {t.heroDesc}
             </p>
 
