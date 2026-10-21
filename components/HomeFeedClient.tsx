@@ -158,76 +158,78 @@ export function HomeFeedClient({
   }
 
   return (
-    <div className="relative min-h-screen flex flex-col bg-[#09090b] text-[#f4f4f5]">
-      <main className="flex-1 flex flex-col">
+    <div className="relative min-h-screen flex flex-col text-[#f4f4f5]">
+      <main className="relative z-10 flex-1 flex flex-col">
         {/* Hero Section */}
         <section className="relative px-6 pt-16 pb-20 md:min-h-[72vh] flex flex-col justify-center items-center overflow-hidden text-center max-w-5xl mx-auto">
-          {/* Subtle Ambient Glow */}
-          <div className="absolute inset-0 -z-10 flex items-center justify-center">
-            <div className="w-[500px] h-[280px] bg-rose-600/15 blur-[120px] rounded-full pointer-events-none" />
+          {/* Ambient Crimson Centerpiece Glow */}
+          <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none">
+            <div className="w-[420px] sm:w-[620px] h-[340px] bg-rose-600/20 blur-[130px] rounded-full" />
           </div>
 
-          <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white mb-6 leading-tight">
-            {t.heroTitle1} <br />
-            <span className="bg-gradient-to-r from-rose-400 via-rose-500 to-rose-600 bg-clip-text text-transparent crimson-glow-text">
-              {t.heroTitle2}
-            </span>
-          </h1>
-
-          <p className="max-w-2xl mx-auto text-base sm:text-lg text-zinc-300 mb-8 leading-relaxed">
-            {t.heroDesc}
-          </p>
-
-          <div className="flex flex-wrap items-center justify-center gap-4">
-            <a
-              href="#feed"
-              onClick={(e) => {
-                e.preventDefault()
-                const el = document.getElementById('feed')
-                if (el) {
-                  el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                }
-              }}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-medium text-sm crimson-glow transition-all hover:scale-105 cursor-pointer"
-            >
-              <BookOpen className="w-4 h-4" /> {t.heroBtnRead}
-            </a>
-
-            <Link
-              href="/generate"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-rose-800/80 bg-rose-950/40 hover:bg-rose-900/50 text-rose-200 font-medium text-sm transition-all hover:scale-105"
-            >
-              <Sparkles className="w-4 h-4 text-rose-400" /> {t.heroBtnPersonalize}
-            </Link>
-
-            <Link
-              href="/write"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-zinc-700 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 font-medium text-sm transition-all"
-            >
-              <PenTool className="w-4 h-4 text-zinc-400" /> {t.heroBtnWrite}
-            </Link>
-          </div>
-
-          {/* Scroll Cue to Encourage Exploration */}
-          <div className="pt-12 flex flex-col items-center">
-            <a
-              href="#feed"
-              onClick={(e) => {
-                e.preventDefault()
-                const el = document.getElementById('feed')
-                if (el) {
-                  el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                }
-              }}
-              className="group inline-flex flex-col items-center gap-2 text-xs font-medium text-zinc-400 hover:text-rose-400 transition-colors cursor-pointer"
-            >
-              <span className="tracking-wide text-[11px] uppercase">
-                {lang === 'hi' ? 'कहानियां देखने के लिए नीचे स्क्रॉल करें' : 'Scroll down for stories feed'}
+          <div className="relative z-10 flex flex-col items-center">
+            <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white mb-6 leading-tight drop-shadow-md">
+              {t.heroTitle1} <br />
+              <span className="bg-gradient-to-r from-rose-400 via-rose-500 to-rose-600 bg-clip-text text-transparent crimson-glow-text">
+                {t.heroTitle2}
               </span>
-              <div className="w-5 h-8 rounded-full border border-zinc-700 group-hover:border-rose-500/80 flex items-start justify-center p-1 transition-colors">
-                <div className="w-1 h-2 bg-rose-500 rounded-full animate-bounce" />
-              </div>
-            </a>
+            </h1>
+
+            <p className="max-w-2xl mx-auto text-base sm:text-lg text-zinc-300 mb-8 leading-relaxed drop-shadow-sm">
+              {t.heroDesc}
+            </p>
+
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              <a
+                href="#feed"
+                onClick={(e) => {
+                  e.preventDefault()
+                  const el = document.getElementById('feed')
+                  if (el) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                  }
+                }}
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-medium text-sm crimson-glow transition-all hover:scale-105 cursor-pointer"
+              >
+                <BookOpen className="w-4 h-4" /> {t.heroBtnRead}
+              </a>
+
+              <Link
+                href="/generate"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-rose-800/80 bg-rose-950/40 hover:bg-rose-900/50 text-rose-200 font-medium text-sm transition-all hover:scale-105"
+              >
+                <Sparkles className="w-4 h-4 text-rose-400" /> {t.heroBtnPersonalize}
+              </Link>
+
+              <Link
+                href="/write"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-zinc-700 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 font-medium text-sm transition-all"
+              >
+                <PenTool className="w-4 h-4 text-zinc-400" /> {t.heroBtnWrite}
+              </Link>
+            </div>
+
+            {/* Scroll Cue to Encourage Exploration */}
+            <div className="pt-12 flex flex-col items-center">
+              <a
+                href="#feed"
+                onClick={(e) => {
+                  e.preventDefault()
+                  const el = document.getElementById('feed')
+                  if (el) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                  }
+                }}
+                className="group inline-flex flex-col items-center gap-2 text-xs font-medium text-zinc-400 hover:text-rose-400 transition-colors cursor-pointer"
+              >
+                <span className="tracking-wide text-[11px] uppercase">
+                  {lang === 'hi' ? 'कहानियां देखने के लिए नीचे स्क्रॉल करें' : 'Scroll down for stories feed'}
+                </span>
+                <div className="w-5 h-8 rounded-full border border-zinc-700 group-hover:border-rose-500/80 flex items-start justify-center p-1 transition-colors">
+                  <div className="w-1 h-2 bg-rose-500 rounded-full animate-bounce" />
+                </div>
+              </a>
+            </div>
           </div>
         </section>
 

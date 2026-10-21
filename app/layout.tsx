@@ -46,7 +46,25 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} dark h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-background text-foreground selection:bg-rose-600 selection:text-white">
+      <body className="min-h-full flex flex-col bg-[#09090b] text-foreground selection:bg-rose-600 selection:text-white relative">
+        {/* Global Website Translucent Background Poster */}
+        <div
+          className="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none"
+          aria-hidden="true"
+        >
+          {/* Ambient Translucent Background Artwork */}
+          <div
+            className="absolute inset-0 bg-cover bg-top sm:bg-center bg-no-repeat opacity-30 sm:opacity-35 filter brightness-95 contrast-110"
+            style={{
+              backgroundImage: `url('/background.png')`,
+              backgroundAttachment: 'fixed',
+            }}
+          />
+          {/* Soft dark vignette & gradient overlay to preserve contrast and readability */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#09090b]/80 via-[#09090b]/40 to-[#09090b]/90" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_25%,#09090b_85%)]" />
+        </div>
+
         <LanguageProvider>
           {/* Unclosable 18+ Age Verification Modal */}
           <AgeGateModal />
@@ -57,7 +75,7 @@ export default function RootLayout({
           </Suspense>
 
           {/* Page Content */}
-          <div className="flex-1 flex flex-col">{children}</div>
+          <div className="relative z-10 flex-1 flex flex-col">{children}</div>
         </LanguageProvider>
       </body>
     </html>
