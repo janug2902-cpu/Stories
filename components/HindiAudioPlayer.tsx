@@ -65,8 +65,14 @@ export function HindiAudioPlayer({
   initialPlay = false,
   onClose,
 }: HindiAudioPlayerProps) {
-  // Transcript preparation
-  const hindiTranscript = getStoryHindiTranscript(story)
+  // Language mode (Hindi vs Hinglish)
+  const [audioLanguage, setAudioLanguage] = useState<'hindi' | 'hinglish'>('hindi')
+
+  // Transcript preparation based on selected language
+  const hindiTranscript = React.useMemo(
+    () => getStoryHindiTranscript(story, audioLanguage),
+    [story, audioLanguage]
+  )
   const paragraphs = React.useMemo(
     () => splitHindiTranscriptIntoParagraphs(hindiTranscript),
     [hindiTranscript]
@@ -104,7 +110,7 @@ export function HindiAudioPlayer({
       const text = paragraphs[paraIndex]
       if (!text) return ''
 
-      const cacheKey = `${tone}:${paraIndex}:${text.slice(0, 40)}`
+      const cacheKey = `${audioLanguage}:${tone}:${paraIndex}:${text.slice(0, 40)}`
       if (blobUrlCache.current.has(cacheKey)) {
         return blobUrlCache.current.get(cacheKey)!
       }
@@ -115,6 +121,7 @@ export function HindiAudioPlayer({
         body: JSON.stringify({
           text,
           tone,
+          voice: audioLanguage === 'hinglish' ? 'en-IN-NeerjaNeural' : 'hi-IN-SwaraNeural',
         }),
       })
 
@@ -322,7 +329,53 @@ export function HindiAudioPlayer({
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Audio Language Mode Switcher: Hindi vs Hinglish */}
+          <div className="flex items-center gap-1 p-1 rounded-xl bg-zinc-900/90 border border-zinc-800">
+            <button
+              type="button"
+              onClick={() => {
+                if (audioLanguage !== 'hindi') {
+                  stopAllActiveAudio()
+                  ambientSound.stop()
+                  setIsPlaying(false)
+                  setCurrentParaIndex(0)
+                  setAudioProgress(0)
+                  blobUrlCache.current.clear()
+                  setAudioLanguage('hindi')
+                }
+              }}
+              className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                audioLanguage === 'hindi'
+                  ? 'bg-rose-950 text-rose-200 border border-rose-700 crimson-glow-sm'
+                  : 'text-zinc-400 hover:text-white'
+              }`}
+            >
+              🌸 हिन्दी
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                if (audioLanguage !== 'hinglish') {
+                  stopAllActiveAudio()
+                  ambientSound.stop()
+                  setIsPlaying(false)
+                  setCurrentParaIndex(0)
+                  setAudioProgress(0)
+                  blobUrlCache.current.clear()
+                  setAudioLanguage('hinglish')
+                }
+              }}
+              className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                audioLanguage === 'hinglish'
+                  ? 'bg-rose-950 text-rose-200 border border-rose-700 crimson-glow-sm'
+                  : 'text-zinc-400 hover:text-white'
+              }`}
+            >
+              💋 हिंग्लिश (Hinglish)
+            </button>
+          </div>
+
           <button
             type="button"
             onClick={() => setShowSettings(!showSettings)}

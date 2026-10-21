@@ -22,6 +22,7 @@ import {
 import { createClient } from '@/lib/supabase/client'
 import { parseStoryContent, getStoryWordCount } from '@/lib/story-blocks'
 import { HindiAudioPlayer } from '@/components/HindiAudioPlayer'
+import { StoryComments } from '@/components/StoryComments'
 import type { Story } from '@/types/database'
 
 interface ReaderClientProps {
@@ -33,6 +34,27 @@ export function ReaderClient({ story }: ReaderClientProps) {
   const [likesCount, setLikesCount] = useState<number>(story.likes_count ?? 0)
   const [hasLiked, setHasLiked] = useState<boolean>(false)
   const [copiedLink, setCopiedLink] = useState<boolean>(false)
+
+  // Dynamic Views Tracking State
+  const [viewsCount, setViewsCount] = useState<number>(story.views_count ?? 0)
+
+  useEffect(() => {
+    // Increment view count dynamically on visit
+    fetch('/api/stories/view', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ storyId: story.id, initialCount: story.views_count || 0 }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (typeof data.views_count === 'number') {
+          setViewsCount(data.views_count)
+        }
+      })
+      .catch(() => {
+        setViewsCount((prev) => prev + 1)
+      })
+  }, [story.id, story.views_count])
 
   // Report Modal State
   const [isReportOpen, setIsReportOpen] = useState<boolean>(false)
@@ -290,7 +312,7 @@ export function ReaderClient({ story }: ReaderClientProps) {
 
             <span className="flex items-center gap-1.5">
               <Eye className="w-4 h-4 text-zinc-500" />
-              {(story.views_count ?? 0).toLocaleString()} views
+              {viewsCount.toLocaleString()} views
             </span>
 
             <button
@@ -544,6 +566,9 @@ export function ReaderClient({ story }: ReaderClientProps) {
             Report Content
           </button>
         </div>
+
+        {/* Reader Feedback & Interactive Comments Section */}
+        <StoryComments storyId={story.id} storyTitle={story.title} />
       </main>
 
       {/* Report Content Modal (Safe Harbor & Policy Compliance) */}

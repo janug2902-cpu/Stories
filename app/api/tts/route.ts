@@ -2,16 +2,28 @@ import { NextRequest, NextResponse } from 'next/server'
 import { MsEdgeTTS, OUTPUT_FORMAT } from 'msedge-tts'
 import crypto from 'crypto'
 
-// Voice selection: hi-IN-SwaraNeural is Microsoft's state-of-the-art Hindi neural female voice
-// Known for emotional depth, soft breathing inflections, and natural human cadence
+// Voice selection: Seductive Indian female neural voices
+// hi-IN-SwaraNeural: Hindi neural voice with sweet emotional warmth
+// en-IN-NeerjaNeural: Indian English & Hinglish neural voice with natural cadence
 const FEMALE_HINDI_VOICE = 'hi-IN-SwaraNeural'
+const FEMALE_HINGLISH_VOICE = 'en-IN-NeerjaNeural'
+
+function selectVoiceForText(text: string, voiceOverride?: string): string {
+  if (voiceOverride) return voiceOverride
+  const latinCount = (text.match(/[a-zA-Z]/g) || []).length
+  const devanagariCount = (text.match(/[\u0900-\u097F]/g) || []).length
+  if (latinCount > devanagariCount) {
+    return FEMALE_HINGLISH_VOICE
+  }
+  return FEMALE_HINDI_VOICE
+}
 
 // In-memory cache for audio buffers to avoid duplicate TTS requests
 const audioCache = new Map<string, { buffer: Buffer; timestamp: number }>()
 const MAX_CACHE_ENTRIES = 120
 
-function getCacheKey(text: string, tone: string): string {
-  return crypto.createHash('sha256').update(`${tone}:${text}`).digest('hex')
+function getCacheKey(text: string, tone: string, voice: string): string {
+  return crypto.createHash('sha256').update(`${voice}:${tone}:${text}`).digest('hex')
 }
 
 // Clean text for speech synthesis and insert natural human breath pauses
@@ -50,7 +62,7 @@ function getAcousticParameters(tone: string) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { text, tone = 'velvet', rateOverride, pitchOverride } = body
+    const { text, tone = 'velvet', voice: voiceParam, rateOverride, pitchOverride } = body
 
     if (!text || typeof text !== 'string' || text.trim().length === 0) {
       return NextResponse.json(
@@ -69,7 +81,8 @@ export async function POST(req: NextRequest) {
 
     // Limit single chunk to 1,200 characters for optimal latency and stability
     const textChunk = cleanText.slice(0, 1200)
-    const cacheKey = getCacheKey(textChunk, tone)
+    const selectedVoice = selectVoiceForText(textChunk, voiceParam)
+    const cacheKey = getCacheKey(textChunk, tone, selectedVoice)
 
     // Check memory cache
     const cached = audioCache.get(cacheKey)
@@ -85,9 +98,9 @@ export async function POST(req: NextRequest) {
       })
     }
 
-    // Synthesize using MsEdgeTTS neural female voice with 96kbps high fidelity
+    // Synthesize using selected Indian female neural voice with 96kbps high fidelity
     const tts = new MsEdgeTTS()
-    await tts.setMetadata(FEMALE_HINDI_VOICE, OUTPUT_FORMAT.AUDIO_24KHZ_96KBITRATE_MONO_MP3)
+    await tts.setMetadata(selectedVoice, OUTPUT_FORMAT.AUDIO_24KHZ_96KBITRATE_MONO_MP3)
 
     const acousticParams = getAcousticParameters(tone)
     const options = {

@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { ReaderClient } from '@/components/ReaderClient'
 import type { Story } from '@/types/database'
 import { MASTER_STORIES_MAP } from '@/lib/stories-data'
+import { ensureStoryMinLength } from '@/lib/story-length-ensurer'
 
 // Curated seed stories for immediate development & preview
 const FALLBACK_STORIES: Record<string, Story> = {
@@ -204,7 +205,10 @@ async function StoryContent({ params }: ReaderPageProps) {
     notFound()
   }
 
-  return <ReaderClient story={story} />
+  // Guarantee story meets minimum 1,200 to 1,500 words requirement
+  const fullStory = ensureStoryMinLength(story)
+
+  return <ReaderClient story={fullStory} />
 }
 
 export default function StoryReaderPage({ params }: ReaderPageProps) {

@@ -56,7 +56,7 @@ export async function generateAIContent(
             model,
             messages,
             temperature: 0.85,
-            max_tokens: 2500,
+            max_tokens: 4000,
           }),
           signal: controller.signal,
         })

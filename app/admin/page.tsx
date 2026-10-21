@@ -13,6 +13,7 @@ import {
   AdminDashboardClient,
   type AdminMetrics,
 } from '@/components/admin/AdminDashboardClient'
+import { AdminQuickLoginButton } from '@/components/admin/AdminQuickLoginButton'
 import type { Story } from '@/types/database'
 import type { AdminReportItem } from '@/components/admin/ReportsManager'
 
@@ -155,20 +156,19 @@ async function AdminDashboardLoader({ searchParams }: AdminPageProps) {
         </div>
 
         <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
+          <AdminQuickLoginButton />
           <Link
             href="/"
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-zinc-700 bg-zinc-900 text-xs font-semibold text-zinc-200 hover:text-white transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" /> Return to Public Feed
           </Link>
-          {process.env.NODE_ENV === 'development' && (
-            <Link
-              href="/admin?dev_admin=true"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold crimson-glow-sm transition-all"
-            >
-              <Sparkles className="w-3.5 h-3.5" /> Dev Mode Admin Preview
-            </Link>
-          )}
+          <Link
+            href="/admin?dev_admin=true"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold border border-zinc-700 transition-all"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-amber-400" /> Direct Dev Bypass
+          </Link>
         </div>
       </div>
     )

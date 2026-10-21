@@ -81,11 +81,13 @@ export async function POST(request: Request) {
     const step1System = `You are a master adult fantasy and erotic romance author for an exclusive platform.
 You create emotionally rich, provocative, and sensual fiction.
 
+CRITICAL LENGTH: Write a full-length, deep, immersive story of MINIMUM 1,200 to 1,500+ words with multi-scene development. Do NOT write brief summaries.
+
 FORMATTING RULE: You MUST format your response strictly as follows:
 TITLE: <A short, poetic, magnetic title under 10 words>
 SUMMARY: <A 1-2 sentence seductive teaser summary under 180 characters>
 STORY:
-<Full multi-paragraph prose of 500-800 words with rich dialogue and sensual pacing>`
+<Full multi-chapter long-form prose of MINIMUM 1,200 to 1,500+ words with rich dialogue, deep sensual pacing, and multi-scene development>`
 
     const step1User = `Premise / Prompt:
 ${prompt_description}
@@ -95,7 +97,7 @@ Category: ${category}
 Heat Intensity: ${intensity}
 Characters: ${characters}
 
-Write the complete narrative draft now in English following the exact format above.`
+Write the complete full-length narrative (minimum 1,200 to 1,500 words) now in English following the exact format above.`
 
     const step1Messages: OpenRouterMessage[] = [
       { role: 'system', content: step1System },

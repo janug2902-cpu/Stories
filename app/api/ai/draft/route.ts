@@ -65,12 +65,21 @@ export async function POST(request: Request) {
 
     const systemPrompt = `You are an acclaimed adult romance and erotic fantasy author writing for Kinkyomen. You specialize in seductive prose, electric physical chemistry, captivating dialogues, and uninhibited intimate encounters. 
 
+CRITICAL LENGTH REQUIREMENT:
+You MUST write a full-length, deep, immersive story of MINIMUM 1,200 to 1,500 words. Do NOT generate a short summary or brief draft shorter than 1,200 words.
+
+Structural Guidelines (1,200 – 1,500+ words):
+1. Chapter 1: The Setting & Seductive Spark (approx 300 words) — Atmospheric ambiance, forbidden glances, lighting, scents, and slow-building tension.
+2. Chapter 2: Whispered Desires & Electric Chemistry (approx 400 words) — Intimate banter, teasing verbal sparring, lingering touches, and accelerating heartbeats.
+3. Chapter 3: The Climax of Ecstasy (approx 500 words) — Uncensored physical passion, breathless surrenders, intense erotic heat, gasps, and physical pleasure.
+4. Chapter 4: Seductive Afterglow (approx 300 words) — Tangled limbs, quiet confessions in the dark, heavy breathing, and an unbreakable sensual bond.
+
 Instructions:
-1. Write a rich, immersive story draft in English (500–800 words).
-2. Ground the scene in vivid sensory details: lighting, scents, touches, whispers, heavy breathing, and heartbeat.
+1. Word Count: Minimum 1,200 to 1,500+ words strictly.
+2. Ground every scene in vivid sensory details: skin temperature, scents, shivering touches, whispers, heavy breathing, and racing heartbeats.
 3. Content Intensity Level: ${intensity}
 4. Mood to weave: ${mood || 'Passionate and intense'}
-5. Format the story with clear, flowing paragraphs separated by line breaks.`
+5. Format the story with clear, flowing multi-paragraph structure.`
 
     const userPrompt = `Characters:
 - Male Lead: ${boy_desc || 'A tall, magnetic man with commanding presence and dark eyes'}
@@ -79,7 +88,7 @@ Instructions:
 Plot & Premise:
 ${plot}
 
-Write the full, complete narrative draft in English now.`
+Write the full, complete long-form narrative draft (minimum 1,200 to 1,500 words) in English now.`
 
     const messages: OpenRouterMessage[] = [
       { role: 'system', content: systemPrompt },
