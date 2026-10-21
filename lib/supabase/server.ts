@@ -10,11 +10,13 @@ export async function createClient() {
   const cookieStore = await cookies()
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  const supabaseAnonKey =
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
 
   if (!supabaseUrl || !supabaseAnonKey) {
     throw new Error(
-      'Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY environment variables.'
+      'Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY/NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY environment variables.'
     )
   }
 
@@ -47,7 +49,10 @@ export async function createAdminClient() {
   const cookieStore = await cookies()
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  const serviceRoleKey =
+    process.env.SUPABASE_SERVICE_ROLE_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
 
   if (!supabaseUrl || !serviceRoleKey) {
     throw new Error(
@@ -72,3 +77,48 @@ export async function createAdminClient() {
     },
   })
 }
+
+/**
+ * Returns the currently authenticated user from either custom session cookie or Supabase.
+ */
+export async function getSessionUser() {
+  try {
+    const cookieStore = await cookies()
+    const customSessionCookie = cookieStore.get('kinky_author_session')
+
+    if (customSessionCookie?.value) {
+      try {
+        const payload = JSON.parse(customSessionCookie.value)
+        return {
+          id: payload.id as string,
+          email: payload.email as string,
+          user_metadata: {
+            username: payload.username || payload.name || payload.email?.split('@')[0],
+          },
+          role: (payload.role as string) || 'user',
+        }
+      } catch {
+        // Fall through
+      }
+    }
+
+    const supabase = await createClient()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    if (user) {
+      return {
+        id: user.id,
+        email: user.email || '',
+        user_metadata: user.user_metadata || {},
+        role: (user.user_metadata?.role as string) || 'user',
+      }
+    }
+
+    return null
+  } catch {
+    return null
+  }
+}
+

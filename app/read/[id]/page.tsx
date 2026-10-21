@@ -4,6 +4,7 @@ import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { ReaderClient } from '@/components/ReaderClient'
 import type { Story } from '@/types/database'
+import { MASTER_STORIES_MAP } from '@/lib/stories-data'
 
 // Curated seed stories for immediate development & preview
 const FALLBACK_STORIES: Record<string, Story> = {
@@ -135,24 +136,24 @@ export async function generateMetadata({
 
     if (data) {
       return {
-        title: `${data.title} | VelvetTales`,
-        description: data.summary || 'Read this adult romance story on VelvetTales.',
+        title: `${data.title} | Kinkyomen`,
+        description: data.summary || 'Read this adult romance story on Kinkyomen.',
       }
     }
   } catch {
     // metadata fallback
   }
 
-  const fallback = FALLBACK_STORIES[id]
+  const fallback = MASTER_STORIES_MAP[id] || FALLBACK_STORIES[id]
   if (fallback) {
     return {
-      title: `${fallback.title} | VelvetTales`,
-      description: fallback.summary || 'Read this adult romance story on VelvetTales.',
+      title: `${fallback.title} | Kinkyomen`,
+      description: fallback.summary || 'Read this adult romance story on Kinkyomen.',
     }
   }
 
   return {
-    title: 'Adult Story Reader | VelvetTales',
+    title: 'Adult Story Reader | Kinkyomen',
   }
 }
 
@@ -195,8 +196,8 @@ async function StoryContent({ params }: ReaderPageProps) {
   }
 
   // Fallback to seed stories if not found in DB
-  if (!story && FALLBACK_STORIES[id]) {
-    story = FALLBACK_STORIES[id]
+  if (!story) {
+    story = MASTER_STORIES_MAP[id] || FALLBACK_STORIES[id] || null
   }
 
   if (!story) {

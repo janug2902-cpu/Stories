@@ -1,6 +1,10 @@
+'use client'
+
 import React from 'react'
 import Link from 'next/link'
 import { Eye, Heart, Sparkles, BookOpen } from 'lucide-react'
+import { useLanguage } from '@/lib/language-context'
+import { getStoryWordCount } from '@/lib/story-blocks'
 import type { Story, StoryLanguage, ContentRating } from '@/types/database'
 
 interface StoryCardProps {
@@ -40,9 +44,78 @@ function getRatingBadgeStyle(rating: ContentRating) {
 }
 
 export function StoryCard({ story }: StoryCardProps) {
-  // Rough reading time calculation (approx 200 words per minute)
-  const wordCount = story.content ? story.content.trim().split(/\s+/).length : 250
+  const { lang } = useLanguage()
+
+  // Accurate reading time calculation (approx 200 words per minute)
+  const wordCount = getStoryWordCount(story.content || '')
   const readTimeMinutes = Math.max(1, Math.ceil(wordCount / 200))
+
+  const formatCategoryLabel = (cat: string) => {
+    if (lang === 'hi') {
+      switch (cat) {
+        case 'teacher_student':
+          return 'शिक्षक और छात्र'
+        case 'maid':
+          return 'नौकरानी और मालिक'
+        case 'travel':
+          return 'सफ़र और छुट्टियां'
+        case 'outdoor':
+          return 'खुली जगहें'
+        case 'office':
+          return 'दफ्तर और बॉस'
+        case 'romance':
+          return 'रोमांस'
+        case 'erotica':
+          return 'कामुक'
+        case 'fantasy':
+          return 'फंतासी'
+        case 'taboo':
+          return 'वर्जित'
+        default:
+          return cat
+      }
+    }
+
+    switch (cat) {
+      case 'teacher_student':
+        return 'Teacher & Student'
+      case 'maid':
+        return 'Maid & Boss'
+      case 'travel':
+        return 'Travel'
+      case 'outdoor':
+        return 'Outdoor'
+      case 'office':
+        return 'Office'
+      case 'romance':
+        return 'Romance'
+      case 'erotica':
+        return 'Erotica'
+      case 'fantasy':
+        return 'Fantasy'
+      case 'taboo':
+        return 'Taboo'
+      default:
+        return cat
+    }
+  }
+
+  const formatLanguageLabel = (l: string) => {
+    if (lang === 'hi') {
+      if (l === 'english') return 'अंग्रेज़ी'
+      if (l === 'hindi') return 'हिंदी'
+      if (l === 'hinglish') return 'हिंग्लिश'
+    }
+    return l
+  }
+
+  const formatRatingLabel = (r: string) => {
+    if (lang === 'hi') {
+      if (r === 'explicit') return 'वयस्क 18+'
+      if (r === 'spicy') return 'मसालेदार'
+    }
+    return r
+  }
 
   return (
     <Link
@@ -55,7 +128,7 @@ export function StoryCard({ story }: StoryCardProps) {
           <div className="flex flex-wrap items-center gap-1.5">
             {/* Category */}
             <span className="px-2.5 py-0.5 rounded-md text-[11px] font-semibold uppercase tracking-wider bg-zinc-800 text-zinc-200 border border-zinc-700">
-              {story.category}
+              {formatCategoryLabel(story.category)}
             </span>
 
             {/* Language Badge */}
@@ -64,7 +137,7 @@ export function StoryCard({ story }: StoryCardProps) {
                 story.language
               )}`}
             >
-              {story.language}
+              {formatLanguageLabel(story.language)}
             </span>
 
             {/* Content Rating */}
@@ -73,14 +146,21 @@ export function StoryCard({ story }: StoryCardProps) {
                 story.content_rating
               )}`}
             >
-              {story.content_rating}
+              {formatRatingLabel(story.content_rating)}
             </span>
+
+            {/* Multi-part Series Badge */}
+            {story.part_number && story.total_parts && (
+              <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-rose-600/30 text-rose-300 border border-rose-500/50">
+                Part {story.part_number}/{story.total_parts}
+              </span>
+            )}
           </div>
 
-          {/* AI Generated Indicator */}
+          {/* Personalized Story Indicator */}
           {story.is_ai_generated && (
             <span className="flex items-center gap-1 text-[11px] font-medium text-rose-400 bg-rose-950/40 px-2 py-0.5 rounded-md border border-rose-900/60">
-              <Sparkles className="w-3 h-3" /> AI
+              <Sparkles className="w-3 h-3" /> {lang === 'hi' ? 'पर्सनलाइज़्ड' : 'Personalized'}
             </span>
           )}
         </div>
@@ -100,7 +180,9 @@ export function StoryCard({ story }: StoryCardProps) {
       <div className="pt-4 border-t border-zinc-800/90 flex items-center justify-between text-xs text-zinc-400">
         <div className="flex items-center gap-1.5 text-zinc-300">
           <BookOpen className="w-3.5 h-3.5 text-rose-400" />
-          <span>{readTimeMinutes} min read</span>
+          <span>
+            {readTimeMinutes} {lang === 'hi' ? 'मिनट की पढ़ाई' : 'min read'}
+          </span>
         </div>
 
         {/* View and Like Counters */}

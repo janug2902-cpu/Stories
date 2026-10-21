@@ -8,7 +8,17 @@ export type Json =
 
 export type UserRole = 'user' | 'admin'
 export type StoryLanguage = 'english' | 'hindi' | 'hinglish'
-export type StoryCategory = 'romance' | 'erotica' | 'fantasy' | 'taboo' | 'other'
+export type StoryCategory =
+  | 'romance'
+  | 'erotica'
+  | 'fantasy'
+  | 'taboo'
+  | 'teacher_student'
+  | 'maid'
+  | 'travel'
+  | 'outdoor'
+  | 'office'
+  | 'other'
 export type ContentRating = 'spicy' | 'explicit'
 export type StoryStatus = 'pending' | 'approved' | 'rejected'
 export type ReportStatus = 'open' | 'resolved'
@@ -55,6 +65,14 @@ export type Story = {
   likes_count: number
   created_at: string
   updated_at: string
+  // Multi-part story series navigation
+  series_title?: string
+  part_number?: number
+  total_parts?: number
+  next_part_id?: string
+  next_part_title?: string
+  prev_part_id?: string
+  prev_part_title?: string
 }
 
 export type StoryInsert = {

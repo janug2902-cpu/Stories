@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import { AgeGateModal } from '@/components/AgeGateModal'
 import { Navbar } from '@/components/Navbar'
+import { LanguageProvider } from '@/lib/language-context'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -16,9 +17,9 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'DesiFantasy / VelvetTales | Adult Romance & Erotic Fantasy Stories',
+  title: 'Kinkyomen | Adult Romance & Erotic Fantasy Stories',
   description:
-    'An exclusive adult realm for fantasy, taboo romances, and provocative stories. Read, write, and create with community authors and state-of-the-art AI.',
+    'An exclusive adult realm for fantasy, taboo romances, and provocative stories. Read, write, and personalize your own tales on Kinkyomen.',
 }
 
 function NavbarSkeleton() {
@@ -38,16 +39,18 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} dark h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground selection:bg-rose-600 selection:text-white">
-        {/* Unclosable 18+ Age Verification Modal */}
-        <AgeGateModal />
+        <LanguageProvider>
+          {/* Unclosable 18+ Age Verification Modal */}
+          <AgeGateModal />
 
-        {/* Global Navigation Bar wrapped in Suspense for Next 16 PPR */}
-        <Suspense fallback={<NavbarSkeleton />}>
-          <Navbar />
-        </Suspense>
+          {/* Global Navigation Bar wrapped in Suspense for Next 16 PPR */}
+          <Suspense fallback={<NavbarSkeleton />}>
+            <Navbar />
+          </Suspense>
 
-        {/* Page Content */}
-        <div className="flex-1 flex flex-col">{children}</div>
+          {/* Page Content */}
+          <div className="flex-1 flex flex-col">{children}</div>
+        </LanguageProvider>
       </body>
     </html>
   )

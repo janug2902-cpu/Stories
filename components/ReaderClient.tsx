@@ -4,6 +4,8 @@ import React, { useState } from 'react'
 import Link from 'next/link'
 import {
   ArrowLeft,
+  ArrowRight,
+  ChevronRight,
   Eye,
   Heart,
   Sparkles,
@@ -18,6 +20,7 @@ import {
   ShieldAlert,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { parseStoryContent, getStoryWordCount } from '@/lib/story-blocks'
 import type { Story } from '@/types/database'
 
 interface ReaderClientProps {
@@ -69,7 +72,7 @@ export function ReaderClient({ story }: ReaderClientProps) {
   }[bgTheme]
 
   // Estimated reading time
-  const wordCount = story.content ? story.content.trim().split(/\s+/).length : 300
+  const wordCount = getStoryWordCount(story.content || '')
   const readTime = Math.max(1, Math.ceil(wordCount / 200))
 
   const handleLike = async () => {
@@ -139,12 +142,41 @@ export function ReaderClient({ story }: ReaderClientProps) {
     }
   }
 
-  // Split content into clean paragraphs
-  const paragraphs = story.content
-    ? story.content.split('\n\n').filter((p) => p.trim().length > 0)
-    : [
-        'No story content found. This tale might still be forming in the shadowed halls of fantasy...',
-      ]
+  // Parse story into structured blocks (supports text paragraphs and embedded photos, GIFs, and videos)
+  const storyBlocks = parseStoryContent(story.content)
+
+  // Multi-part story support:
+  // If story exceeds 1500 words and doesn't have an explicit next_part_id, we automatically break into Part 1 and Part 2!
+  const [activeVirtualPart, setActiveVirtualPart] = useState<number>(1)
+  const isOver1500Words = wordCount > 1500 && !story.next_part_id
+
+  const { virtualPart1Blocks, virtualPart2Blocks } = React.useMemo(() => {
+    if (!isOver1500Words) {
+      return { virtualPart1Blocks: storyBlocks, virtualPart2Blocks: [] }
+    }
+    let runningWords = 0
+    const p1: typeof storyBlocks = []
+    const p2: typeof storyBlocks = []
+
+    for (const b of storyBlocks) {
+      const bWords = b.type === 'text' ? b.content.trim().split(/\s+/).filter(Boolean).length : 0
+      if (runningWords < 1350 || p1.length === 0) {
+        p1.push(b)
+        runningWords += bWords
+      } else {
+        p2.push(b)
+      }
+    }
+    return { virtualPart1Blocks: p1, virtualPart2Blocks: p2 }
+  }, [storyBlocks, isOver1500Words])
+
+  const displayedBlocks = isOver1500Words
+    ? activeVirtualPart === 1
+      ? virtualPart1Blocks
+      : virtualPart2Blocks
+    : storyBlocks
+
+  let textIndex = 0
 
   return (
     <div
@@ -256,6 +288,18 @@ export function ReaderClient({ story }: ReaderClientProps) {
         <header className="mb-10 text-center pb-8 border-b border-zinc-800">
           {/* Metadata badges */}
           <div className="flex flex-wrap items-center justify-center gap-2 mb-4">
+            {story.series_title && (
+              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-rose-950/80 text-rose-300 border border-rose-800">
+                Series: {story.series_title}
+              </span>
+            )}
+
+            {story.part_number && story.total_parts && (
+              <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-rose-600/30 text-rose-300 border border-rose-500/50">
+                Part {story.part_number} of {story.total_parts}
+              </span>
+            )}
+
             <span className="px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-zinc-800 text-zinc-200 border border-zinc-700">
               {story.category}
             </span>
@@ -274,8 +318,35 @@ export function ReaderClient({ story }: ReaderClientProps) {
 
             {story.is_ai_generated && (
               <span className="flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium text-rose-300 bg-rose-950/50 border border-rose-900/60">
-                <Sparkles className="w-3 h-3 text-rose-400" /> AI Co-Authored
+                <Sparkles className="w-3 h-3 text-rose-400" /> Custom Crafted
               </span>
+            )}
+
+            {isOver1500Words && (
+              <div className="inline-flex items-center gap-1 p-0.5 rounded-lg bg-zinc-900 border border-zinc-800 ml-1">
+                <button
+                  type="button"
+                  onClick={() => setActiveVirtualPart(1)}
+                  className={`px-2.5 py-0.5 rounded text-[11px] font-bold transition-all ${
+                    activeVirtualPart === 1
+                      ? 'bg-rose-600 text-white'
+                      : 'text-zinc-400 hover:text-white'
+                  }`}
+                >
+                  Part 1
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveVirtualPart(2)}
+                  className={`px-2.5 py-0.5 rounded text-[11px] font-bold transition-all ${
+                    activeVirtualPart === 2
+                      ? 'bg-rose-600 text-white'
+                      : 'text-zinc-400 hover:text-white'
+                  }`}
+                >
+                  Part 2
+                </button>
+              </div>
             )}
           </div>
 
@@ -323,20 +394,188 @@ export function ReaderClient({ story }: ReaderClientProps) {
           }`}
         >
           <div className={`${fontSizeClass} ${lineSpacingClass} text-justify sm:text-left`}>
-            {paragraphs.map((para, index) => (
-              <p
-                key={index}
-                className={
-                  index === 0
-                    ? 'first-letter:text-4xl first-letter:font-bold first-letter:text-rose-400 first-letter:float-left first-letter:mr-2 first-letter:leading-none'
-                    : ''
-                }
-              >
-                {para}
-              </p>
-            ))}
+            {displayedBlocks.map((block) => {
+              if (block.type === 'text') {
+                const isFirst = textIndex === 0
+                textIndex += 1
+                return (
+                  <p
+                    key={block.id}
+                    className={
+                      isFirst
+                        ? 'first-letter:text-4xl first-letter:font-bold first-letter:text-rose-400 first-letter:float-left first-letter:mr-2 first-letter:leading-none'
+                        : ''
+                    }
+                  >
+                    {block.content}
+                  </p>
+                )
+              }
+
+              if (block.type === 'image') {
+                return (
+                  <figure
+                    key={block.id}
+                    className="my-8 rounded-2xl overflow-hidden border border-zinc-800/80 bg-black/40 shadow-2xl relative group transition-all"
+                  >
+                    <div className="relative overflow-hidden max-h-[560px] flex items-center justify-center bg-black/60">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={block.content}
+                        alt={block.caption || 'Sensual story moment'}
+                        className="w-full h-auto object-cover max-h-[560px] transition-transform duration-700 group-hover:scale-[1.01]"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 ring-1 ring-inset ring-white/10 rounded-2xl pointer-events-none" />
+                    </div>
+                    {block.caption && (
+                      <figcaption className="px-4 py-2.5 text-center text-xs italic text-rose-300/90 bg-zinc-950/80 border-t border-zinc-800/60 font-sans tracking-wide">
+                        ✦ {block.caption}
+                      </figcaption>
+                    )}
+                  </figure>
+                )
+              }
+
+              if (block.type === 'gif') {
+                return (
+                  <figure
+                    key={block.id}
+                    className="my-8 rounded-2xl overflow-hidden border border-rose-900/50 bg-black/40 shadow-2xl relative group transition-all"
+                  >
+                    <div className="relative overflow-hidden max-h-[560px] flex items-center justify-center bg-black/60">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={block.content}
+                        alt={block.caption || 'Sensual animated scene'}
+                        className="w-full h-auto object-cover max-h-[560px]"
+                        loading="lazy"
+                      />
+                      <span className="absolute top-3 right-3 px-2 py-0.5 rounded-md bg-black/75 text-[10px] font-bold text-rose-400 uppercase tracking-widest border border-rose-900/60 backdrop-blur-sm shadow-md">
+                        GIF
+                      </span>
+                      <div className="absolute inset-0 ring-1 ring-inset ring-rose-500/20 rounded-2xl pointer-events-none" />
+                    </div>
+                    {block.caption && (
+                      <figcaption className="px-4 py-2.5 text-center text-xs italic text-rose-300/90 bg-zinc-950/80 border-t border-zinc-800/60 font-sans tracking-wide">
+                        ✦ {block.caption}
+                      </figcaption>
+                    )}
+                  </figure>
+                )
+              }
+
+              if (block.type === 'video') {
+                return (
+                  <figure
+                    key={block.id}
+                    className="my-8 rounded-2xl overflow-hidden border border-rose-900/60 bg-black shadow-2xl relative"
+                  >
+                    <div className="relative overflow-hidden max-h-[560px] flex items-center justify-center bg-black">
+                      <video
+                        src={block.content}
+                        controls
+                        playsInline
+                        loop
+                        muted
+                        className="w-full max-h-[560px] object-contain rounded-t-2xl"
+                      />
+                    </div>
+                    {block.caption && (
+                      <figcaption className="px-4 py-2.5 text-center text-xs italic text-rose-300/90 bg-zinc-950/80 border-t border-zinc-800/60 font-sans tracking-wide">
+                        ▶ {block.caption}
+                      </figcaption>
+                    )}
+                  </figure>
+                )
+              }
+
+              return null
+            })}
           </div>
         </article>
+
+        {/* Multi-Part Chapter Continuation Card (Explicit Next Part) */}
+        {story.next_part_id && (
+          <div className="my-10 p-6 sm:p-8 rounded-2xl border border-rose-900/80 bg-gradient-to-br from-rose-950/70 via-[#180a12] to-[#09090b] shadow-2xl relative overflow-hidden group animate-in fade-in">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-rose-600/15 rounded-full blur-3xl pointer-events-none" />
+            <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+              <div>
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-900/70 text-[11px] font-bold text-rose-300 uppercase tracking-wider mb-2">
+                  <Sparkles className="w-3.5 h-3.5 text-rose-400" /> Next Chapter • Part {(story.part_number || 1) + 1}
+                </div>
+                <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight font-serif">
+                  {story.next_part_title || `Continue to Part ${(story.part_number || 1) + 1}`}
+                </h3>
+                <p className="text-xs sm:text-sm text-zinc-300 mt-1 max-w-lg">
+                  The desire escalates and secrets deepen. Turn the page to discover what happens next in Part {(story.part_number || 1) + 1}.
+                </p>
+              </div>
+              <Link
+                href={`/read/${story.next_part_id}`}
+                className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 text-white font-bold text-xs uppercase tracking-wider crimson-glow transition-all flex items-center justify-center gap-2 shrink-0 group-hover:scale-105"
+              >
+                <span>Read Part {(story.part_number || 1) + 1}</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {/* In-Story Virtual Part 2 Continuation Link (for single stories > 1500 words) */}
+        {isOver1500Words && activeVirtualPart === 1 && (
+          <div className="my-10 p-6 sm:p-8 rounded-2xl border border-rose-900/80 bg-gradient-to-br from-rose-950/70 via-[#180a12] to-[#09090b] shadow-2xl relative overflow-hidden animate-in fade-in">
+            <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+              <div>
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-900/70 text-[11px] font-bold text-rose-300 uppercase tracking-wider mb-2">
+                  <Sparkles className="w-3.5 h-3.5 text-rose-400" /> End of Part 1 (1,350 words)
+                </div>
+                <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight font-serif">
+                  Continue Reading: Part 2 (The Climax)
+                </h3>
+                <p className="text-xs sm:text-sm text-zinc-300 mt-1 max-w-lg">
+                  The night is far from over. Unravel the intoxicating climax and conclusion in Part 2.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveVirtualPart(2)
+                  window.scrollTo({ top: 300, behavior: 'smooth' })
+                }}
+                className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 text-white font-bold text-xs uppercase tracking-wider crimson-glow transition-all flex items-center justify-center gap-2 shrink-0 cursor-pointer"
+              >
+                <span>Continue to Part 2</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Previous Part Navigation if available */}
+        {(story.prev_part_id || (isOver1500Words && activeVirtualPart === 2)) && (
+          <div className="my-6 flex justify-start">
+            {story.prev_part_id ? (
+              <Link
+                href={`/read/${story.prev_part_id}`}
+                className="inline-flex items-center gap-2 text-xs font-semibold text-rose-400 hover:text-rose-300 transition-colors"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" /> Previous Chapter: {story.prev_part_title || `Part ${(story.part_number || 2) - 1}`}
+              </Link>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveVirtualPart(1)
+                  window.scrollTo({ top: 300, behavior: 'smooth' })
+                }}
+                className="inline-flex items-center gap-2 text-xs font-semibold text-rose-400 hover:text-rose-300 transition-colors cursor-pointer"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" /> ← Back to Part 1
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Engagement and Safe-Harbor Footer Actions */}
         <div className="mt-12 pt-8 border-t border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-4">
