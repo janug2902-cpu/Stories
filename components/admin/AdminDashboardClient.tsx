@@ -13,8 +13,10 @@ import {
   ShieldCheck,
   ArrowRight,
   TrendingUp,
+  PenTool,
 } from 'lucide-react'
 import { AdminAIFactory } from '@/components/admin/AdminAIFactory'
+import { AdminStoryComposer } from '@/components/admin/AdminStoryComposer'
 import { ModerationTable } from '@/components/admin/ModerationTable'
 import { ReportsManager, type AdminReportItem } from '@/components/admin/ReportsManager'
 import type { Story, Profile } from '@/types/database'
@@ -31,7 +33,7 @@ interface AdminDashboardClientProps {
   pendingStories: Story[]
   openReports: AdminReportItem[]
   adminProfile?: Profile | null
-  initialTab?: 'factory' | 'submissions' | 'reports'
+  initialTab?: 'factory' | 'compose' | 'submissions' | 'reports'
 }
 
 export function AdminDashboardClient({
@@ -41,7 +43,7 @@ export function AdminDashboardClient({
   adminProfile,
   initialTab = 'factory',
 }: AdminDashboardClientProps) {
-  const [activeTab, setActiveTab] = useState<'factory' | 'submissions' | 'reports'>(initialTab)
+  const [activeTab, setActiveTab] = useState<'factory' | 'compose' | 'submissions' | 'reports'>(initialTab)
 
   return (
     <div className="space-y-8">
@@ -224,6 +226,29 @@ export function AdminDashboardClient({
             </span>
           </button>
 
+          {/* Tab 2: Write & Post Story (Direct Admin Authoring) */}
+          <button
+            type="button"
+            onClick={() => setActiveTab('compose')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all shrink-0 ${
+              activeTab === 'compose'
+                ? 'bg-gradient-to-r from-rose-600 to-rose-700 text-white shadow-lg shadow-rose-950/50'
+                : 'text-zinc-400 hover:text-white hover:bg-zinc-800/60'
+            }`}
+          >
+            <PenTool className="w-4 h-4" />
+            <span>Write & Post Story</span>
+            <span
+              className={`px-1.5 py-0.2 rounded-md text-[10px] font-bold uppercase tracking-wider ${
+                activeTab === 'compose'
+                  ? 'bg-white/20 text-white'
+                  : 'bg-emerald-950/80 text-emerald-300 border border-emerald-800/60'
+              }`}
+            >
+              Direct
+            </span>
+          </button>
+
           {/* Tab 2: User Submissions */}
           <button
             type="button"
@@ -281,6 +306,12 @@ export function AdminDashboardClient({
         {activeTab === 'factory' && (
           <section aria-label="Story Factory Tab" className="animate-in fade-in-50 duration-200">
             <AdminAIFactory />
+          </section>
+        )}
+
+        {activeTab === 'compose' && (
+          <section aria-label="Write and Post Story Tab" className="animate-in fade-in-50 duration-200">
+            <AdminStoryComposer />
           </section>
         )}
 

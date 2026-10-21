@@ -71,7 +71,7 @@ const DEMO_OPEN_REPORTS: AdminReportItem[] = [
 interface AdminPageProps {
   searchParams: Promise<{
     dev_admin?: string
-    tab?: 'factory' | 'submissions' | 'reports'
+    tab?: 'factory' | 'compose' | 'submissions' | 'reports'
   }>
 }
 
