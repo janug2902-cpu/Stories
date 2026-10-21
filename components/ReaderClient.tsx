@@ -379,85 +379,54 @@ export function ReaderClient({ story }: ReaderClientProps) {
           </div>
         </article>
 
-        {/* Multi-Part Chapter Continuation Card (Explicit Next Part) */}
-        {story.next_part_id && (
-          <div className="my-10 p-6 sm:p-8 rounded-2xl border border-rose-900/80 bg-gradient-to-br from-rose-950/70 via-[#180a12] to-[#09090b] shadow-2xl relative overflow-hidden group animate-in fade-in">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-rose-600/15 rounded-full blur-3xl pointer-events-none" />
-            <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-              <div>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-900/70 text-[11px] font-bold text-rose-300 uppercase tracking-wider mb-2">
-                  <Sparkles className="w-3.5 h-3.5 text-rose-400" /> Next Chapter • Part {(story.part_number || 1) + 1}
-                </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight font-serif">
-                  {story.next_part_title || `Continue to Part ${(story.part_number || 1) + 1}`}
-                </h3>
-                <p className="text-xs sm:text-sm text-zinc-300 mt-1 max-w-lg">
-                  The desire escalates and secrets deepen. Turn the page to discover what happens next in Part {(story.part_number || 1) + 1}.
-                </p>
-              </div>
-              <Link
-                href={`/read/${story.next_part_id}`}
-                className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 text-white font-bold text-xs uppercase tracking-wider crimson-glow transition-all flex items-center justify-center gap-2 shrink-0 group-hover:scale-105"
-              >
-                <span>Read Part {(story.part_number || 1) + 1}</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
-          </div>
-        )}
-
-        {/* In-Story Virtual Part 2 Continuation Link (for single stories > 1500 words) */}
-        {isOver1500Words && activeVirtualPart === 1 && (
-          <div className="my-10 p-6 sm:p-8 rounded-2xl border border-rose-900/80 bg-gradient-to-br from-rose-950/70 via-[#180a12] to-[#09090b] shadow-2xl relative overflow-hidden animate-in fade-in">
-            <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-              <div>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-900/70 text-[11px] font-bold text-rose-300 uppercase tracking-wider mb-2">
-                  <Sparkles className="w-3.5 h-3.5 text-rose-400" /> End of Part 1 (1,350 words)
-                </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight font-serif">
-                  Continue Reading: Part 2 (The Climax)
-                </h3>
-                <p className="text-xs sm:text-sm text-zinc-300 mt-1 max-w-lg">
-                  The night is far from over. Unravel the intoxicating climax and conclusion in Part 2.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveVirtualPart(2)
-                  window.scrollTo({ top: 300, behavior: 'smooth' })
-                }}
-                className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 text-white font-bold text-xs uppercase tracking-wider crimson-glow transition-all flex items-center justify-center gap-2 shrink-0 cursor-pointer"
-              >
-                <span>Continue to Part 2</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Previous Part Navigation if available */}
-        {(story.prev_part_id || (isOver1500Words && activeVirtualPart === 2)) && (
-          <div className="my-6 flex justify-start">
+        {/* Multi-Part Chapter Navigation (Simple, Minimal Link) */}
+        {(story.next_part_id || story.prev_part_id || isOver1500Words) && (
+          <div className="my-8 pt-6 border-t border-zinc-800/80 flex flex-wrap items-center justify-between gap-4 text-sm font-medium">
             {story.prev_part_id ? (
               <Link
                 href={`/read/${story.prev_part_id}`}
-                className="inline-flex items-center gap-2 text-xs font-semibold text-rose-400 hover:text-rose-300 transition-colors"
+                className="inline-flex items-center gap-1.5 text-zinc-400 hover:text-rose-400 transition-colors"
               >
-                <ArrowLeft className="w-3.5 h-3.5" /> Previous Chapter: {story.prev_part_title || `Part ${(story.part_number || 2) - 1}`}
+                <ArrowLeft className="w-4 h-4 text-zinc-500" />
+                <span>{story.prev_part_title || `Previous: Part ${(story.part_number || 2) - 1}`}</span>
               </Link>
-            ) : (
+            ) : isOver1500Words && activeVirtualPart === 2 ? (
               <button
                 type="button"
                 onClick={() => {
                   setActiveVirtualPart(1)
                   window.scrollTo({ top: 300, behavior: 'smooth' })
                 }}
-                className="inline-flex items-center gap-2 text-xs font-semibold text-rose-400 hover:text-rose-300 transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 text-zinc-400 hover:text-rose-400 transition-colors cursor-pointer"
               >
-                <ArrowLeft className="w-3.5 h-3.5" /> ← Back to Part 1
+                <ArrowLeft className="w-4 h-4 text-zinc-500" />
+                <span>Previous (Part 1)</span>
               </button>
+            ) : (
+              <div />
             )}
+
+            {story.next_part_id ? (
+              <Link
+                href={`/read/${story.next_part_id}`}
+                className="inline-flex items-center gap-1.5 text-rose-400 hover:text-rose-300 font-semibold hover:underline transition-all ml-auto"
+              >
+                <span>{story.next_part_title || `Part ${(story.part_number || 1) + 1}`}</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            ) : isOver1500Words && activeVirtualPart === 1 ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveVirtualPart(2)
+                  window.scrollTo({ top: 300, behavior: 'smooth' })
+                }}
+                className="inline-flex items-center gap-1.5 text-rose-400 hover:text-rose-300 font-semibold hover:underline transition-all ml-auto cursor-pointer"
+              >
+                <span>Part 2</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            ) : null}
           </div>
         )}
 
