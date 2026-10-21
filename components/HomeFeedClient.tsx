@@ -14,6 +14,7 @@ import {
   RotateCcw,
 } from 'lucide-react'
 import { StoryCard } from '@/components/StoryCard'
+import { ScrollReveal } from '@/components/ScrollReveal'
 import { useLanguage } from '@/lib/language-context'
 import type { Story } from '@/types/database'
 
@@ -116,7 +117,14 @@ export function HomeFeedClient({
           <div className="flex flex-wrap items-center justify-center gap-4">
             <a
               href="#feed"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-medium text-sm crimson-glow transition-all hover:scale-105"
+              onClick={(e) => {
+                e.preventDefault()
+                const el = document.getElementById('feed')
+                if (el) {
+                  el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                }
+              }}
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-medium text-sm crimson-glow transition-all hover:scale-105 cursor-pointer"
             >
               <BookOpen className="w-4 h-4" /> {t.heroBtnRead}
             </a>
@@ -137,94 +145,104 @@ export function HomeFeedClient({
           </div>
         </section>
 
-        {/* Stories Feed Section */}
-        <section id="feed" className="px-4 sm:px-6 py-12 max-w-7xl mx-auto w-full">
-          {/* Header & Filter Controls */}
-          <div className="mb-10 space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2.5">
-                  <Flame className="w-7 h-7 text-rose-500" /> {t.feedTitle}
-                </h2>
-                <p className="text-xs sm:text-sm text-zinc-400 mt-1">
-                  {t.feedSubtitle}
-                </p>
+        {/* Stories Feed Section with Smooth Scroll Reveal */}
+        <section id="feed" className="px-4 sm:px-6 py-12 max-w-7xl mx-auto w-full scroll-mt-20">
+          {/* Header & Filter Controls with Smooth Scroll Entrance */}
+          <ScrollReveal direction="up" duration={650}>
+            <div className="mb-10 space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2.5">
+                    <Flame className="w-7 h-7 text-rose-500" /> {t.feedTitle}
+                  </h2>
+                  <p className="text-xs sm:text-sm text-zinc-400 mt-1">
+                    {t.feedSubtitle}
+                  </p>
+                </div>
+
+                {(selectedLang !== 'all' || selectedCat !== 'all') && (
+                  <button
+                    type="button"
+                    onClick={handleResetFilters}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-zinc-700 bg-zinc-900 text-xs font-medium text-zinc-300 hover:text-white hover:border-zinc-500 transition-colors w-fit cursor-pointer"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5 text-rose-400" /> {t.resetFilters}
+                  </button>
+                )}
               </div>
 
-              {(selectedLang !== 'all' || selectedCat !== 'all') && (
-                <button
-                  type="button"
-                  onClick={handleResetFilters}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-zinc-700 bg-zinc-900 text-xs font-medium text-zinc-300 hover:text-white hover:border-zinc-500 transition-colors w-fit"
-                >
-                  <RotateCcw className="w-3.5 h-3.5 text-rose-400" /> {t.resetFilters}
-                </button>
-              )}
-            </div>
+              {/* Filter Pills Container */}
+              <div className="p-5 rounded-2xl border border-zinc-800/90 bg-[#121216]/80 backdrop-blur-md space-y-4 shadow-xl">
+                {/* Category Pills */}
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5 sm:w-24 shrink-0">
+                    <Filter className="w-3.5 h-3.5 text-rose-400" /> {t.filterCategory}
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {dynamicCategories.map((cat) => {
+                      const isActive = selectedCat === cat.id
+                      const label = lang === 'hi' ? cat.hi : cat.en
+                      return (
+                        <button
+                          type="button"
+                          key={cat.id}
+                          onClick={() => setSelectedCat(cat.id)}
+                          className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                            isActive
+                              ? 'bg-rose-600 text-white crimson-glow-sm scale-105'
+                              : 'bg-[#09090b] border border-zinc-800 text-zinc-300 hover:text-white hover:border-zinc-700'
+                          }`}
+                        >
+                          {label}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
 
-            {/* Filter Pills Container */}
-            <div className="p-5 rounded-2xl border border-zinc-800/90 bg-[#121216]/80 backdrop-blur-md space-y-4">
-              {/* Category Pills */}
-              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-                <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5 sm:w-24 shrink-0">
-                  <Filter className="w-3.5 h-3.5 text-rose-400" /> {t.filterCategory}
-                </span>
-                <div className="flex flex-wrap gap-2">
-                  {dynamicCategories.map((cat) => {
-                    const isActive = selectedCat === cat.id
-                    const label = lang === 'hi' ? cat.hi : cat.en
-                    return (
-                      <button
-                        type="button"
-                        key={cat.id}
-                        onClick={() => setSelectedCat(cat.id)}
-                        className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-                          isActive
-                            ? 'bg-rose-600 text-white crimson-glow-sm scale-105'
-                            : 'bg-[#09090b] border border-zinc-800 text-zinc-300 hover:text-white hover:border-zinc-700'
-                        }`}
-                      >
-                        {label}
-                      </button>
-                    )
-                  })}
+                {/* Language Pills */}
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 pt-3 border-t border-zinc-800/60">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5 sm:w-24 shrink-0">
+                    <Languages className="w-3.5 h-3.5 text-rose-400" /> {t.filterLanguage}
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {LANGUAGES_LIST.map((l) => {
+                      const isActive = selectedLang === l.id
+                      const label = lang === 'hi' ? l.hi : l.en
+                      return (
+                        <button
+                          type="button"
+                          key={l.id}
+                          onClick={() => setSelectedLang(l.id)}
+                          className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                            isActive
+                              ? 'bg-rose-600 text-white crimson-glow-sm scale-105'
+                              : 'bg-[#09090b] border border-zinc-800 text-zinc-300 hover:text-white hover:border-zinc-700'
+                          }`}
+                        >
+                          {label}
+                        </button>
+                      )
+                    })}
+                  </div>
                 </div>
               </div>
-
-              {/* Language Pills */}
-              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 pt-3 border-t border-zinc-800/60">
-                <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5 sm:w-24 shrink-0">
-                  <Languages className="w-3.5 h-3.5 text-rose-400" /> {t.filterLanguage}
-                </span>
-                <div className="flex flex-wrap gap-2">
-                  {LANGUAGES_LIST.map((l) => {
-                    const isActive = selectedLang === l.id
-                    const label = lang === 'hi' ? l.hi : l.en
-                    return (
-                      <button
-                        type="button"
-                        key={l.id}
-                        onClick={() => setSelectedLang(l.id)}
-                        className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-                          isActive
-                            ? 'bg-rose-600 text-white crimson-glow-sm scale-105'
-                            : 'bg-[#09090b] border border-zinc-800 text-zinc-300 hover:text-white hover:border-zinc-700'
-                        }`}
-                      >
-                        {label}
-                      </button>
-                    )
-                  })}
-                </div>
-              </div>
             </div>
-          </div>
+          </ScrollReveal>
 
-          {/* Stories Grid or Empty State */}
+          {/* Stories Grid with Staggered Scroll Reveal */}
           {filteredStories.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-              {filteredStories.map((story) => (
-                <StoryCard key={story.id} story={story} />
+              {filteredStories.map((story, idx) => (
+                <ScrollReveal
+                  key={story.id}
+                  direction="up"
+                  delay={(idx % 4) * 80}
+                  duration={650}
+                  className="h-full"
+                >
+                  <StoryCard story={story} />
+                </ScrollReveal>
               ))}
             </div>
           ) : (
@@ -240,7 +258,7 @@ export function HomeFeedClient({
                 <button
                   type="button"
                   onClick={handleResetFilters}
-                  className="px-5 py-2.5 rounded-xl border border-zinc-700 hover:border-zinc-500 bg-zinc-900 text-xs font-semibold text-zinc-200 hover:text-white transition-all"
+                  className="px-5 py-2.5 rounded-xl border border-zinc-700 hover:border-zinc-500 bg-zinc-900 text-xs font-semibold text-zinc-200 hover:text-white transition-all cursor-pointer"
                 >
                   {t.clearFilters}
                 </button>
@@ -255,36 +273,38 @@ export function HomeFeedClient({
           )}
         </section>
 
-        {/* Feature Highlights */}
+        {/* Feature Highlights with Scroll Entrance */}
         <section className="px-6 py-16 border-t border-zinc-800 bg-[#09090b] text-xs text-zinc-400">
-          <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-8">
-            <div className="flex items-center gap-2">
-              <Languages className="w-4 h-4 text-rose-400" />
-              <span>
-                {lang === 'hi'
-                  ? 'बहुभाषी: अंग्रेज़ी • हिंदी • हिंग्लिश'
-                  : 'Multilingual: English • Hindi • Hinglish'}
-              </span>
+          <ScrollReveal direction="up" delay={80} duration={600}>
+            <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-8">
+              <div className="flex items-center gap-2">
+                <Languages className="w-4 h-4 text-rose-400" />
+                <span>
+                  {lang === 'hi'
+                    ? 'बहुभाषी: अंग्रेज़ी • हिंदी • हिंग्लिश'
+                    : 'Multilingual: English • Hindi • Hinglish'}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Flame className="w-4 h-4 text-rose-400" />
+                <span>
+                  {lang === 'hi'
+                    ? 'मसालेदार और वयस्क 18+ रेटिंग्स'
+                    : 'Spicy & Explicit Ratings'}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <KeyRound className="w-4 h-4 text-rose-400" />
+                <span>
+                  {lang === 'hi' ? 'त्वरित कहानी रचना' : 'Instant Creation Studio'}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-rose-400" />
+                <span>{t.footerSafeHarbor}</span>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <Flame className="w-4 h-4 text-rose-400" />
-              <span>
-                {lang === 'hi'
-                  ? 'मसालेदार और वयस्क 18+ रेटिंग्स'
-                  : 'Spicy & Explicit Ratings'}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <KeyRound className="w-4 h-4 text-rose-400" />
-              <span>
-                {lang === 'hi' ? 'त्वरित कहानी रचना' : 'Instant Creation Studio'}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-rose-400" />
-              <span>{t.footerSafeHarbor}</span>
-            </div>
-          </div>
+          </ScrollReveal>
         </section>
       </main>
 
