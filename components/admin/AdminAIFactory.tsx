@@ -272,6 +272,9 @@ export function AdminAIFactory() {
                   onChange={(e) => setCategory(e.target.value as StoryCategory)}
                   className="w-full p-2 rounded-xl border border-zinc-700 bg-[#09090b] text-zinc-100 focus:outline-none focus:border-rose-500"
                 >
+                  <option value="bhabhi">Bhabhi</option>
+                  <option value="aunty">Aunty</option>
+                  <option value="padosan">Padosan</option>
                   <option value="teacher_student">Teacher & Student</option>
                   <option value="maid">Maid & Boss</option>
                   <option value="travel">Travel & Vacation</option>

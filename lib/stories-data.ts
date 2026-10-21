@@ -10,10 +10,14 @@ import { FANTASY_STORIES } from './stories/fantasy'
 import { TABOO_STORIES } from './stories/taboo'
 
 import { EPIC_SAGAS } from './stories/epics'
+import { BHABHI_STORIES } from './stories/bhabhi'
+import { AUNTY_STORIES } from './stories/aunty'
 
 // Master Aggregated Stories Library
 export const MASTER_STORIES: Story[] = [
   ...EPIC_SAGAS,
+  ...BHABHI_STORIES,
+  ...AUNTY_STORIES,
   ...TEACHER_STUDENT_STORIES,
   ...MAID_STORIES,
   ...TRAVEL_STORIES,

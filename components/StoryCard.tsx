@@ -51,8 +51,15 @@ export function StoryCard({ story }: StoryCardProps) {
   const readTimeMinutes = Math.max(1, Math.ceil(wordCount / 200))
 
   const formatCategoryLabel = (cat: string) => {
+    const normalized = (cat || '').toLowerCase().trim()
     if (lang === 'hi') {
-      switch (cat) {
+      switch (normalized) {
+        case 'bhabhi':
+          return 'भाभी'
+        case 'aunty':
+          return 'आंटी'
+        case 'padosan':
+          return 'पड़ोसन'
         case 'teacher_student':
           return 'शिक्षक और छात्र'
         case 'maid':
@@ -72,11 +79,17 @@ export function StoryCard({ story }: StoryCardProps) {
         case 'taboo':
           return 'वर्जित'
         default:
-          return cat
+          return cat.replace(/_/g, ' ')
       }
     }
 
-    switch (cat) {
+    switch (normalized) {
+      case 'bhabhi':
+        return 'Bhabhi'
+      case 'aunty':
+        return 'Aunty'
+      case 'padosan':
+        return 'Padosan'
       case 'teacher_student':
         return 'Teacher & Student'
       case 'maid':
@@ -97,6 +110,8 @@ export function StoryCard({ story }: StoryCardProps) {
         return 'Taboo'
       default:
         return cat
+          .replace(/_/g, ' ')
+          .replace(/\b\w/g, (c) => c.toUpperCase())
     }
   }
 

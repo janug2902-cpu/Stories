@@ -36,6 +36,9 @@ export interface TranslationDictionary {
   clearFilters: string
   // Categories
   catAll: string
+  catBhabhi: string
+  catAunty: string
+  catPadosan: string
   catTeacherStudent: string
   catMaid: string
   catTravel: string
@@ -110,6 +113,9 @@ const translations: Record<AppLanguage, TranslationDictionary> = {
     makeYourStory: 'Make Your Story',
     clearFilters: 'Clear Filters',
     catAll: 'All',
+    catBhabhi: 'Bhabhi',
+    catAunty: 'Aunty',
+    catPadosan: 'Neighbor / Padosan',
     catTeacherStudent: 'Teacher & Student',
     catMaid: 'Maid & Boss',
     catTravel: 'Travel & Vacation',
@@ -179,6 +185,9 @@ const translations: Record<AppLanguage, TranslationDictionary> = {
     makeYourStory: 'अपनी कहानी बनाएं',
     clearFilters: 'फ़िल्टर हटाएं',
     catAll: 'सभी',
+    catBhabhi: 'भाभी',
+    catAunty: 'आंटी',
+    catPadosan: 'पड़ोसन',
     catTeacherStudent: 'शिक्षक और छात्र',
     catMaid: 'नौकरानी और मालिक',
     catTravel: 'सफ़र और छुट्टियां',

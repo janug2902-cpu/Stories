@@ -25,6 +25,8 @@ interface HomeFeedClientProps {
 
 const CATEGORIES: { id: string; en: string; hi: string }[] = [
   { id: 'all', en: 'All', hi: 'सभी' },
+  { id: 'bhabhi', en: 'Bhabhi', hi: 'भाभी' },
+  { id: 'aunty', en: 'Aunty', hi: 'आंटी' },
   { id: 'teacher_student', en: 'Teacher & Student', hi: 'शिक्षक और छात्र' },
   { id: 'maid', en: 'Maid & Boss', hi: 'नौकरानी और मालिक' },
   { id: 'travel', en: 'Travel', hi: 'सफ़र और छुट्टियां' },
@@ -52,6 +54,26 @@ export function HomeFeedClient({
 
   const [selectedCat, setSelectedCat] = useState<string>(initialCat.toLowerCase())
   const [selectedLang, setSelectedLang] = useState<string>(initialLang.toLowerCase())
+
+  // Dynamic category tabs: includes default categories + any writer-created custom categories in stories
+  const dynamicCategories = useMemo(() => {
+    const list = [...CATEGORIES]
+    const existingIds = new Set(list.map((c) => c.id.toLowerCase()))
+
+    initialStories.forEach((s) => {
+      const catId = (s.category || '').toLowerCase().trim()
+      if (catId && !existingIds.has(catId)) {
+        existingIds.add(catId)
+        const formatted = catId.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+        list.push({
+          id: catId,
+          en: formatted,
+          hi: formatted,
+        })
+      }
+    })
+    return list
+  }, [initialStories])
 
   // Filter stories efficiently on client with instant reactivity
   const filteredStories = useMemo(() => {
@@ -152,7 +174,7 @@ export function HomeFeedClient({
                   <Filter className="w-3.5 h-3.5 text-rose-400" /> {t.filterCategory}
                 </span>
                 <div className="flex flex-wrap gap-2">
-                  {CATEGORIES.map((cat) => {
+                  {dynamicCategories.map((cat) => {
                     const isActive = selectedCat === cat.id
                     const label = lang === 'hi' ? cat.hi : cat.en
                     return (

@@ -18,7 +18,11 @@ export type StoryCategory =
   | 'travel'
   | 'outdoor'
   | 'office'
+  | 'bhabhi'
+  | 'aunty'
+  | 'padosan'
   | 'other'
+  | (string & {})
 export type ContentRating = 'spicy' | 'explicit'
 export type StoryStatus = 'pending' | 'approved' | 'rejected'
 export type ReportStatus = 'open' | 'resolved'

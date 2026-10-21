@@ -356,6 +356,9 @@ export default function GenerateStoryPage() {
                 onChange={(e) => setCategory(e.target.value as StoryCategory)}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-700 bg-[#09090b] text-xs text-zinc-200 focus:outline-none focus:border-rose-500"
               >
+                <option value="bhabhi">{t.catBhabhi}</option>
+                <option value="aunty">{t.catAunty}</option>
+                <option value="padosan">{t.catPadosan}</option>
                 <option value="teacher_student">{t.catTeacherStudent}</option>
                 <option value="maid">{t.catMaid}</option>
                 <option value="travel">{t.catTravel}</option>

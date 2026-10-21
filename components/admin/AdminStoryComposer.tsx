@@ -30,7 +30,10 @@ import {
   getStoryWordCount,
 } from '@/lib/story-blocks'
 
-const CATEGORY_OPTIONS: { label: string; value: StoryCategory }[] = [
+const DEFAULT_CATEGORY_OPTIONS: { label: string; value: StoryCategory }[] = [
+  { label: 'Bhabhi', value: 'bhabhi' },
+  { label: 'Aunty', value: 'aunty' },
+  { label: 'Padosan', value: 'padosan' },
   { label: 'Teacher & Student', value: 'teacher_student' },
   { label: 'Maid & Boss', value: 'maid' },
   { label: 'Travel & Vacation', value: 'travel' },
@@ -46,10 +49,50 @@ const CATEGORY_OPTIONS: { label: string; value: StoryCategory }[] = [
 export function AdminStoryComposer() {
   // Form State
   const [title, setTitle] = useState('')
-  const [category, setCategory] = useState<StoryCategory>('teacher_student')
+  const [category, setCategory] = useState<StoryCategory>('bhabhi')
+  const [customCategories, setCustomCategories] = useState<{ label: string; value: string }[]>([])
+  const [isAddingCategory, setIsAddingCategory] = useState(false)
+  const [newCategoryInput, setNewCategoryInput] = useState('')
   const [language, setLanguage] = useState<StoryLanguage>('hindi')
   const [rating, setRating] = useState<ContentRating>('explicit')
   const [summary, setSummary] = useState('')
+
+  // Load custom categories from localStorage
+  React.useEffect(() => {
+    try {
+      const saved = localStorage.getItem('writer_custom_categories')
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        if (Array.isArray(parsed)) {
+          setCustomCategories(parsed)
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }, [])
+
+  const handleAddCustomCategory = () => {
+    const trimmed = newCategoryInput.trim()
+    if (!trimmed) return
+    const slug = trimmed.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '') || trimmed.toLowerCase()
+    const newCat = { label: trimmed, value: slug }
+
+    const exists = customCategories.some((c) => c.value === slug) || DEFAULT_CATEGORY_OPTIONS.some((c) => c.value === slug)
+    if (!exists) {
+      const updated = [...customCategories, newCat]
+      setCustomCategories(updated)
+      try {
+        localStorage.setItem('writer_custom_categories', JSON.stringify(updated))
+      } catch {
+        // ignore
+      }
+    }
+
+    setCategory(slug as StoryCategory)
+    setNewCategoryInput('')
+    setIsAddingCategory(false)
+  }
 
   // Structured Story Blocks (Draggable & Reorderable)
   const [blocks, setBlocks] = useState<StoryBlock[]>([
@@ -478,20 +521,89 @@ export function AdminStoryComposer() {
           {/* Category / Language / Rating Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-300 mb-2">
-                Category
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-300">
+                  Category
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setIsAddingCategory((v) => !v)}
+                  className="text-[11px] font-semibold text-rose-400 hover:text-rose-300 flex items-center gap-1 transition-colors cursor-pointer"
+                >
+                  <Plus className="w-3 h-3" />
+                  <span>{isAddingCategory ? 'Close' : '+ Add Custom'}</span>
+                </button>
+              </div>
+
               <select
                 value={category}
-                onChange={(e) => setCategory(e.target.value as StoryCategory)}
+                onChange={(e) => {
+                  if (e.target.value === '__add_new__') {
+                    setIsAddingCategory(true)
+                  } else {
+                    setCategory(e.target.value as StoryCategory)
+                  }
+                }}
                 className="w-full p-3 rounded-xl border border-zinc-700 bg-[#09090b] text-sm text-zinc-100 focus:outline-none focus:border-rose-500"
               >
-                {CATEGORY_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
+                <optgroup label="Popular Categories">
+                  {DEFAULT_CATEGORY_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </optgroup>
+                {customCategories.length > 0 && (
+                  <optgroup label="Your Custom Categories">
+                    {customCategories.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        ✦ {opt.label}
+                      </option>
+                    ))}
+                  </optgroup>
+                )}
+                <option value="__add_new__">+ Create New Category...</option>
               </select>
+
+              {isAddingCategory && (
+                <div className="mt-2.5 p-3 rounded-xl border border-rose-800/80 bg-rose-950/40 space-y-2 animate-in fade-in">
+                  <p className="text-[11px] font-medium text-rose-300">
+                    Add custom category (e.g. College Romance, Gym, Royal Affair)
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      placeholder="Category name..."
+                      value={newCategoryInput}
+                      onChange={(e) => setNewCategoryInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault()
+                          handleAddCustomCategory()
+                        }
+                      }}
+                      className="flex-1 px-3 py-1.5 rounded-lg border border-zinc-700 bg-[#09090b] text-xs text-white focus:outline-none focus:border-rose-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddCustomCategory}
+                      className="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition-all shrink-0 cursor-pointer"
+                    >
+                      Save
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsAddingCategory(false)
+                        setNewCategoryInput('')
+                      }}
+                      className="px-2.5 py-1.5 rounded-lg border border-zinc-800 text-zinc-400 hover:text-white text-xs transition-all shrink-0 cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div>
