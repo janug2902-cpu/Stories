@@ -14,29 +14,36 @@ function getCacheKey(text: string, tone: string): string {
   return crypto.createHash('sha256').update(`${tone}:${text}`).digest('hex')
 }
 
-// Clean text for speech synthesis (remove formatting, markdown, brackets, urls)
+// Clean text for speech synthesis and insert natural human breath pauses
 function sanitizeTextForSpeech(input: string): string {
   return input
     .replace(/\[IMAGE:[^\]]*\]/gi, '')
     .replace(/https?:\/\/\S+/gi, '')
     .replace(/[*_~`#>\-–—]/g, ' ')
+    // Convert Hindi danda to natural breathing pauses
+    .replace(/।+/g, '... ')
+    // Smooth out repeated punctuation into breath pauses
+    .replace(/\.{3,}/g, '... ')
     .replace(/\s+/g, ' ')
     .trim()
 }
 
-// Map tone presets to precise acoustic rate & pitch parameters for natural, soft erotic narration
+// Map tone presets to precise acoustic rate & pitch parameters for natural, smooth Indian girl voice
 function getAcousticParameters(tone: string) {
   switch (tone) {
     case 'velvet':
-      // Soft, gentle, natural human female voice with slight intimate warmth
-      return { rate: '-6%', pitch: '-1Hz' }
+    case 'desi_mastani':
+      // Young, sweet, smooth Indian girl tone with seductive warmth
+      return { rate: '-3%', pitch: '+0.5Hz' }
     case 'sultry':
-      // Expressive, warm, captivating romantic tone
-      return { rate: '-3%', pitch: '0Hz' }
+    case 'sensual_whisper':
+      // Breathy, slow, intimate bedside whisper
+      return { rate: '-6%', pitch: '-0.5Hz' }
     case 'natural':
+    case 'bold_passion':
     default:
-      // 100% natural, clear feminine Hindi reading
-      return { rate: '0%', pitch: '0Hz' }
+      // Lively, smooth, expressive feminine cadence
+      return { rate: '-1%', pitch: '+0.5Hz' }
   }
 }
 

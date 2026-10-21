@@ -310,14 +310,14 @@ export function HindiAudioPlayer({
           <div>
             <div className="flex items-center gap-2">
               <h3 className="font-bold text-white text-base sm:text-lg flex items-center gap-1.5">
-                हिंदी ऑडियो ट्रांसक्रिप्ट <span className="text-rose-400 text-xs font-normal">(Hindi Audio Experience)</span>
+                देसी लड़की की आवाज़ <span className="text-rose-400 text-xs font-normal">(Desi Girl Audio Narration)</span>
               </h3>
               <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-rose-950/80 text-rose-300 border border-rose-800">
-                <Sparkles className="w-3 h-3 text-rose-400" /> महिला मखमली आवाज़
+                <Sparkles className="w-3 h-3 text-rose-400" /> सोफ्ट व कामुक अंदाज़
               </span>
             </div>
             <p className="text-xs text-zinc-400">
-              सोफ्ट कामुक अंदाज़ में सुनें • {estimatedMinutes} मिनट का ऑडियो ({paragraphs.length} भाग)
+              सुनो ना जानू... मदहोश देसी अंदाज़ में • {estimatedMinutes} मिनट का ऑडियो ({paragraphs.length} भाग)
             </p>
           </div>
         </div>

@@ -327,13 +327,13 @@ export function ReaderClient({ story }: ReaderClientProps) {
               </div>
               <div>
                 <h3 className="font-bold text-white text-base flex items-center justify-center sm:justify-start gap-2">
-                  हिंदी ऑडियो ट्रांसक्रिप्ट में सुनें
+                  देसी लड़की की आवाज़ में सुनें
                   <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-600/30 text-rose-300 border border-rose-500/40">
-                    महिला सोफ्ट आवाज़
+                    देसी सोफ्ट आवाज़
                   </span>
                 </h3>
                 <p className="text-xs text-zinc-400 mt-1">
-                  मखमली, कामुक अंदाज़ में पूरी कहानी का ऑडियो अनुभव और संपूर्ण हिंदी ट्रांसक्रिप्ट।
+                  सुनो ना जानू... देसी अंदाज़ और कामुक शब्दों में पूरी कहानी का मदहोश ऑडियो और ट्रांसक्रिप्ट।
                 </p>
               </div>
             </div>
