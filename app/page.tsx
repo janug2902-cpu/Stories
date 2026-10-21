@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
 import { HomeFeedClient } from '@/components/HomeFeedClient'
 import { MASTER_STORIES } from '@/lib/stories-data'
@@ -11,7 +11,21 @@ interface HomeFeedProps {
   }>
 }
 
-export default async function HomeFeed({ searchParams }: HomeFeedProps) {
+function HomeFeedSkeleton() {
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-pulse space-y-6">
+      <div className="h-10 w-48 bg-zinc-900 rounded-xl" />
+      <div className="h-16 w-full bg-zinc-900/60 rounded-2xl border border-zinc-800" />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[1, 2, 3, 4, 5, 6].map((i) => (
+          <div key={i} className="h-64 rounded-2xl bg-zinc-900/40 border border-zinc-800" />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+async function FeedContent({ searchParams }: HomeFeedProps) {
   const resolvedParams = await searchParams
   const selectedLang = resolvedParams.lang || 'all'
   const selectedCat = resolvedParams.cat || 'all'
@@ -50,5 +64,13 @@ export default async function HomeFeed({ searchParams }: HomeFeedProps) {
       initialLang={selectedLang}
       initialCat={selectedCat}
     />
+  )
+}
+
+export default function HomeFeed({ searchParams }: HomeFeedProps) {
+  return (
+    <Suspense fallback={<HomeFeedSkeleton />}>
+      <FeedContent searchParams={searchParams} />
+    </Suspense>
   )
 }
