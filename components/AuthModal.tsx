@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import Image from 'next/image'
 import {
   X,
   Mail,
@@ -194,8 +195,14 @@ export function AuthModal({
 
         {/* Header */}
         <div className="text-center mb-6">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-tr from-rose-800 to-rose-600 crimson-glow-sm">
-            <Flame className="h-6 w-6 text-white" />
+          <div className="relative mx-auto mb-3 h-14 w-14 rounded-full overflow-hidden border-2 border-amber-500/60 crimson-glow flex items-center justify-center bg-black">
+            <Image
+              src="/logo.jpg"
+              alt="Kinkyomen Logo"
+              width={56}
+              height={56}
+              className="object-cover w-full h-full"
+            />
           </div>
           <h3 className="text-2xl font-bold tracking-tight text-white">
             {mode === 'signin' ? 'Welcome to Kinkyomen' : 'Create Your Account'}

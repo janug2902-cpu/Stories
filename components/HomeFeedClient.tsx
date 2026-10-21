@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import {
   Flame,
   Sparkles,
@@ -333,8 +334,16 @@ export function HomeFeedClient({
       {/* Footer */}
       <footer className="border-t border-zinc-800 px-6 py-8 bg-[#09090b] text-xs text-zinc-500">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <Flame className="w-4 h-4 text-rose-600" />
+          <div className="flex items-center gap-2.5">
+            <div className="relative w-6 h-6 rounded-full overflow-hidden border border-amber-500/40 shrink-0">
+              <Image
+                src="/logo.jpg"
+                alt="Kinkyomen Logo"
+                width={24}
+                height={24}
+                className="object-cover w-full h-full"
+              />
+            </div>
             <span className="font-semibold text-zinc-300">Kinkyomen</span>
             <span>{t.footerRights}</span>
           </div>

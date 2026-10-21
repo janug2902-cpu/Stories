@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import {
   Flame,
@@ -132,9 +133,16 @@ export function Navbar() {
       <header className="sticky top-0 z-40 glass-panel border-b border-zinc-800/80 bg-[#09090b]/85 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           {/* Logo with Brand Name: Kinkyomen */}
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-rose-700 to-rose-500 flex items-center justify-center crimson-glow-sm group-hover:scale-105 transition-transform">
-              <Flame className="w-5 h-5 text-white" />
+          <Link href="/" className="flex items-center gap-3 group">
+            <div className="relative w-11 h-11 rounded-full overflow-hidden border-2 border-amber-500/60 crimson-glow-sm group-hover:scale-105 group-hover:border-rose-400 transition-all flex items-center justify-center bg-black shrink-0">
+              <Image
+                src="/logo.jpg"
+                alt="Kinkyomen Logo"
+                width={44}
+                height={44}
+                className="object-cover w-full h-full"
+                priority
+              />
             </div>
             <div className="flex flex-col">
               <span className="text-xl font-extrabold tracking-tight text-white group-hover:text-rose-400 transition-colors flex items-center gap-1 font-serif">
