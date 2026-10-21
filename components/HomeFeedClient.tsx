@@ -101,10 +101,6 @@ export function HomeFeedClient({
             <div className="w-[500px] h-[280px] bg-rose-600/15 blur-[120px] rounded-full pointer-events-none" />
           </div>
 
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-rose-500/30 bg-rose-950/40 text-xs font-medium text-rose-300 mb-6">
-            <Sparkles className="w-3.5 h-3.5 text-rose-400" />
-            <span>Kinkyomen • {t.heroBadge}</span>
-          </div>
 
           <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white mb-6 leading-tight">
             {t.heroTitle1} <br />
