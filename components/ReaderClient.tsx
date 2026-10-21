@@ -12,7 +12,6 @@ import {
   BookOpen,
   Share2,
   Flag,
-  Type,
   X,
   AlertTriangle,
   CheckCircle2,
@@ -27,18 +26,7 @@ interface ReaderClientProps {
   story: Story
 }
 
-type FontSize = 'sm' | 'md' | 'lg'
-type LineSpacing = 'normal' | 'relaxed' | 'loose'
-type BgTheme = 'slate' | 'black' | 'velvet'
-type FontFace = 'serif' | 'sans'
-
 export function ReaderClient({ story }: ReaderClientProps) {
-  // Reading Customization State
-  const [fontSize, setFontSize] = useState<FontSize>('md')
-  const [lineSpacing, setLineSpacing] = useState<LineSpacing>('relaxed')
-  const [bgTheme, setBgTheme] = useState<BgTheme>('slate')
-  const [fontFace, setFontFace] = useState<FontFace>('serif')
-
   // Engagement State
   const [likesCount, setLikesCount] = useState<number>(story.likes_count ?? 0)
   const [hasLiked, setHasLiked] = useState<boolean>(false)
@@ -51,25 +39,6 @@ export function ReaderClient({ story }: ReaderClientProps) {
   const [reportSubmitting, setReportSubmitting] = useState<boolean>(false)
   const [reportSuccess, setReportSuccess] = useState<boolean>(false)
   const [reportError, setReportError] = useState<string | null>(null)
-
-  // Typography Styles Mapping
-  const fontSizeClass = {
-    sm: 'text-base sm:text-lg',
-    md: 'text-lg sm:text-xl',
-    lg: 'text-xl sm:text-2xl',
-  }[fontSize]
-
-  const lineSpacingClass = {
-    normal: 'leading-normal space-y-4',
-    relaxed: 'leading-relaxed space-y-6',
-    loose: 'leading-[2.2] space-y-8',
-  }[lineSpacing]
-
-  const bgThemeStyles = {
-    slate: 'bg-[#121216] text-[#f4f4f5] border-zinc-800',
-    black: 'bg-[#050505] text-[#e4e4e7] border-zinc-900',
-    velvet: 'bg-[#10080d] text-[#fce7f3] border-rose-950/60',
-  }[bgTheme]
 
   // Estimated reading time
   const wordCount = getStoryWordCount(story.content || '')
@@ -179,105 +148,24 @@ export function ReaderClient({ story }: ReaderClientProps) {
   let textIndex = 0
 
   return (
-    <div
-      className={`min-h-screen transition-colors duration-300 ${
-        bgTheme === 'black'
-          ? 'bg-[#050505]'
-          : bgTheme === 'velvet'
-          ? 'bg-[#10080d]'
-          : 'bg-[#09090b]'
-      }`}
-    >
+    <div className="min-h-screen bg-[#09090b] text-[#f4f4f5]">
       {/* Sticky Reader Controls Header */}
       <div className="sticky top-16 z-30 border-b border-zinc-800/80 bg-[#09090b]/90 backdrop-blur-xl px-4 py-3">
-        <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div className="max-w-4xl mx-auto flex items-center justify-between gap-3 text-xs">
           {/* Back button */}
           <Link
             href="/"
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-zinc-800 bg-zinc-900/90 text-zinc-300 hover:text-white hover:border-zinc-600 transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5 text-rose-400" />
-            <span className="hidden sm:inline">Back to Feed</span>
+            <span>Back to Feed</span>
           </Link>
 
-          {/* Reading Controls Bar */}
-          <div className="flex flex-wrap items-center gap-2">
-            {/* Font Size Toggle */}
-            <div className="flex items-center rounded-lg border border-zinc-800 bg-zinc-900/90 p-0.5">
-              {(['sm', 'md', 'lg'] as FontSize[]).map((size) => (
-                <button
-                  key={size}
-                  onClick={() => setFontSize(size)}
-                  className={`px-2 py-1 rounded text-xs font-semibold uppercase transition-all ${
-                    fontSize === size
-                      ? 'bg-rose-600 text-white'
-                      : 'text-zinc-400 hover:text-zinc-200'
-                  }`}
-                  title={`Font size: ${size}`}
-                >
-                  {size === 'sm' ? 'A-' : size === 'md' ? 'A' : 'A+'}
-                </button>
-              ))}
-            </div>
-
-            {/* Line Spacing Toggle */}
-            <div className="flex items-center rounded-lg border border-zinc-800 bg-zinc-900/90 p-0.5">
-              {(['normal', 'relaxed', 'loose'] as LineSpacing[]).map((spacing) => (
-                <button
-                  key={spacing}
-                  onClick={() => setLineSpacing(spacing)}
-                  className={`px-2 py-1 rounded text-[11px] capitalize transition-all ${
-                    lineSpacing === spacing
-                      ? 'bg-rose-600 text-white font-semibold'
-                      : 'text-zinc-400 hover:text-zinc-200'
-                  }`}
-                  title={`Line spacing: ${spacing}`}
-                >
-                  {spacing === 'normal' ? '1.5' : spacing === 'relaxed' ? '1.8' : '2.2'}
-                </button>
-              ))}
-            </div>
-
-            {/* Font Face Toggle */}
-            <button
-              onClick={() => setFontFace(fontFace === 'serif' ? 'sans' : 'serif')}
-              className="px-2.5 py-1.5 rounded-lg border border-zinc-800 bg-zinc-900/90 text-zinc-300 hover:text-white transition-colors flex items-center gap-1 text-xs"
-              title="Toggle Serif vs Sans-Serif"
-            >
-              <Type className="w-3.5 h-3.5 text-rose-400" />
-              <span className="capitalize">{fontFace}</span>
-            </button>
-
-            {/* Background Theme Selector */}
-            <div className="flex items-center rounded-lg border border-zinc-800 bg-zinc-900/90 p-0.5">
-              <button
-                onClick={() => setBgTheme('slate')}
-                className={`w-6 h-6 rounded flex items-center justify-center transition-all ${
-                  bgTheme === 'slate' ? 'ring-2 ring-rose-500 bg-[#121216]' : 'bg-[#18181b]'
-                }`}
-                title="Theme: Dark Slate"
-              >
-                <div className="w-3 h-3 rounded-full bg-zinc-400" />
-              </button>
-              <button
-                onClick={() => setBgTheme('black')}
-                className={`w-6 h-6 rounded flex items-center justify-center transition-all ${
-                  bgTheme === 'black' ? 'ring-2 ring-rose-500 bg-black' : 'bg-black'
-                }`}
-                title="Theme: Pitch Black"
-              >
-                <div className="w-3 h-3 rounded-full bg-zinc-600" />
-              </button>
-              <button
-                onClick={() => setBgTheme('velvet')}
-                className={`w-6 h-6 rounded flex items-center justify-center transition-all ${
-                  bgTheme === 'velvet' ? 'ring-2 ring-rose-500 bg-[#250d18]' : 'bg-[#1f0a14]'
-                }`}
-                title="Theme: Velvet Night"
-              >
-                <div className="w-3 h-3 rounded-full bg-rose-400" />
-              </button>
-            </div>
+          <div className="flex items-center gap-2 text-xs text-zinc-400">
+            <span className="flex items-center gap-1.5 font-medium text-zinc-300">
+              <BookOpen className="w-3.5 h-3.5 text-rose-400" />
+              <span>{readTime} min read</span>
+            </span>
           </div>
         </div>
       </div>
@@ -388,12 +276,8 @@ export function ReaderClient({ story }: ReaderClientProps) {
         </header>
 
         {/* Reader Prose Text Block */}
-        <article
-          className={`rounded-2xl p-6 sm:p-10 border transition-all ${bgThemeStyles} ${
-            fontFace === 'serif' ? 'font-serif' : 'font-sans'
-          }`}
-        >
-          <div className={`${fontSizeClass} ${lineSpacingClass} text-justify sm:text-left`}>
+        <article className="rounded-2xl p-6 sm:p-10 border border-zinc-800 bg-[#121216] text-[#f4f4f5] font-serif transition-all shadow-xl">
+          <div className="text-lg sm:text-xl leading-relaxed space-y-6 text-justify sm:text-left">
             {displayedBlocks.map((block) => {
               if (block.type === 'text') {
                 const isFirst = textIndex === 0
