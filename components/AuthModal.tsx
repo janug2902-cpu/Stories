@@ -214,21 +214,6 @@ export function AuthModal({
           </p>
         </div>
 
-        {/* 1-Click Instant Demo Login Button */}
-        <button
-          type="button"
-          onClick={handleDemoLogin}
-          disabled={demoLoading}
-          className="w-full mb-4 py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-500/20 via-rose-500/20 to-purple-500/20 hover:from-amber-500/30 hover:via-rose-500/30 hover:to-purple-500/30 border border-amber-500/40 hover:border-amber-400 text-amber-200 text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-sm"
-        >
-          {demoLoading ? (
-            <Loader2 className="w-4 h-4 animate-spin text-amber-300" />
-          ) : (
-            <Zap className="w-4 h-4 text-amber-400" />
-          )}
-          <span>⚡ 1-Click Instant Author Sign In (No Setup Needed)</span>
-        </button>
-
         {/* Tab Toggle */}
         <div className="flex rounded-xl bg-zinc-900/90 p-1 border border-zinc-800 mb-5">
           <button

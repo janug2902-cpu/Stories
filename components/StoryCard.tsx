@@ -2,7 +2,7 @@
 
 import React from 'react'
 import Link from 'next/link'
-import { Eye, Heart, Sparkles, BookOpen } from 'lucide-react'
+import { Eye, Heart, Sparkles, BookOpen, Headphones } from 'lucide-react'
 import { useLanguage } from '@/lib/language-context'
 import { getStoryWordCount } from '@/lib/story-blocks'
 import type { Story, StoryLanguage, ContentRating } from '@/types/database'
@@ -164,6 +164,12 @@ export function StoryCard({ story }: StoryCardProps) {
               {formatRatingLabel(story.content_rating)}
             </span>
 
+            {/* Audio Available Badge */}
+            <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-rose-950/80 text-rose-300 border border-rose-800/80 inline-flex items-center gap-1">
+              <Headphones className="w-2.5 h-2.5 text-rose-400" />
+              {lang === 'hi' ? 'हिंदी ऑडियो' : 'Hindi Audio'}
+            </span>
+
             {/* Multi-part Series Badge */}
             {story.part_number && story.total_parts && (
               <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-rose-600/30 text-rose-300 border border-rose-500/50">
@@ -193,10 +199,17 @@ export function StoryCard({ story }: StoryCardProps) {
 
       {/* Footer Meta */}
       <div className="pt-4 border-t border-zinc-800/90 flex items-center justify-between text-xs text-zinc-400">
-        <div className="flex items-center gap-1.5 text-zinc-300">
-          <BookOpen className="w-3.5 h-3.5 text-rose-400" />
-          <span>
-            {readTimeMinutes} {lang === 'hi' ? 'मिनट की पढ़ाई' : 'min read'}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 text-zinc-300">
+            <BookOpen className="w-3.5 h-3.5 text-rose-400" />
+            <span>
+              {readTimeMinutes} {lang === 'hi' ? 'मिनट की पढ़ाई' : 'min read'}
+            </span>
+          </div>
+
+          <span className="inline-flex items-center gap-1 text-[11px] font-medium text-rose-400">
+            <Headphones className="w-3 h-3" />
+            {lang === 'hi' ? 'सुनें' : 'Listen'}
           </span>
         </div>
 

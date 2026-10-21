@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import {
   ArrowLeft,
@@ -17,9 +17,11 @@ import {
   CheckCircle2,
   Loader2,
   ShieldAlert,
+  Headphones,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { parseStoryContent, getStoryWordCount } from '@/lib/story-blocks'
+import { HindiAudioPlayer } from '@/components/HindiAudioPlayer'
 import type { Story } from '@/types/database'
 
 interface ReaderClientProps {
@@ -43,6 +45,17 @@ export function ReaderClient({ story }: ReaderClientProps) {
   // Estimated reading time
   const wordCount = getStoryWordCount(story.content || '')
   const readTime = Math.max(1, Math.ceil(wordCount / 200))
+
+  // Hindi Audio Experience State
+  const [isAudioPlayerOpen, setIsAudioPlayerOpen] = useState<boolean>(false)
+  const [autoStartAudio, setAutoStartAudio] = useState<boolean>(false)
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.search.includes('audio=1')) {
+      setIsAudioPlayerOpen(true)
+      setAutoStartAudio(true)
+    }
+  }, [])
 
   const handleLike = async () => {
     if (hasLiked) return
@@ -162,6 +175,27 @@ export function ReaderClient({ story }: ReaderClientProps) {
           </Link>
 
           <div className="flex items-center gap-2 text-xs text-zinc-400">
+            <button
+              type="button"
+              onClick={() => {
+                if (isAudioPlayerOpen) {
+                  setIsAudioPlayerOpen(false)
+                  setAutoStartAudio(false)
+                } else {
+                  setIsAudioPlayerOpen(true)
+                  setAutoStartAudio(true)
+                }
+              }}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border font-medium text-xs transition-all cursor-pointer ${
+                isAudioPlayerOpen
+                  ? 'border-rose-500 bg-rose-600 text-white crimson-glow-sm'
+                  : 'border-rose-800/80 bg-rose-950/60 hover:bg-rose-900/60 text-rose-200'
+              }`}
+            >
+              <Headphones className="w-3.5 h-3.5" />
+              <span>{isAudioPlayerOpen ? 'ऑडियो बंद करें' : '🎧 हिंदी ऑडियो'}</span>
+            </button>
+
             <span className="flex items-center gap-1.5 font-medium text-zinc-300">
               <BookOpen className="w-3.5 h-3.5 text-rose-400" />
               <span>{readTime} min read</span>
@@ -274,6 +308,48 @@ export function ReaderClient({ story }: ReaderClientProps) {
             </button>
           </div>
         </header>
+
+        {/* Hindi Audio Experience Banner or Player */}
+        {isAudioPlayerOpen ? (
+          <HindiAudioPlayer
+            story={story}
+            initialPlay={autoStartAudio}
+            onClose={() => {
+              setIsAudioPlayerOpen(false)
+              setAutoStartAudio(false)
+            }}
+          />
+        ) : (
+          <div className="mb-8 p-4 sm:p-5 rounded-2xl border border-rose-900/60 bg-gradient-to-r from-rose-950/40 via-[#18121c]/80 to-rose-950/40 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left shadow-xl">
+            <div className="flex items-center gap-3.5">
+              <div className="w-11 h-11 rounded-xl bg-rose-600/20 border border-rose-600/40 flex items-center justify-center shrink-0">
+                <Headphones className="w-5 h-5 text-rose-400" />
+              </div>
+              <div>
+                <h3 className="font-bold text-white text-base flex items-center justify-center sm:justify-start gap-2">
+                  हिंदी ऑडियो ट्रांसक्रिप्ट में सुनें
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-600/30 text-rose-300 border border-rose-500/40">
+                    महिला सोफ्ट आवाज़
+                  </span>
+                </h3>
+                <p className="text-xs text-zinc-400 mt-1">
+                  मखमली, कामुक अंदाज़ में पूरी कहानी का ऑडियो अनुभव और संपूर्ण हिंदी ट्रांसक्रिप्ट।
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                setIsAudioPlayerOpen(true)
+                setAutoStartAudio(true)
+              }}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 text-white font-semibold text-xs crimson-glow transition-all hover:scale-105 cursor-pointer shrink-0"
+            >
+              <Headphones className="w-4 h-4" /> अभी सुनें (Listen Audio)
+            </button>
+          </div>
+        )}
 
         {/* Reader Prose Text Block */}
         <article className="rounded-2xl p-6 sm:p-10 border border-zinc-800 bg-[#121216] text-[#f4f4f5] font-serif transition-all shadow-xl">

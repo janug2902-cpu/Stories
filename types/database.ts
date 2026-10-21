@@ -77,6 +77,8 @@ export type Story = {
   next_part_title?: string
   prev_part_id?: string
   prev_part_title?: string
+  // Audio transcript in Hindi for voice narration
+  audio_transcript_hi?: string | null
 }
 
 export type StoryInsert = {
@@ -94,6 +96,7 @@ export type StoryInsert = {
   likes_count?: number
   created_at?: string
   updated_at?: string
+  audio_transcript_hi?: string | null
 }
 
 export type StoryUpdate = {
@@ -111,6 +114,7 @@ export type StoryUpdate = {
   likes_count?: number
   created_at?: string
   updated_at?: string
+  audio_transcript_hi?: string | null
 }
 
 export type Report = {

@@ -17,6 +17,7 @@ import {
   Coins,
   ShieldCheck,
   Languages,
+  Search,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { AuthModal } from '@/components/AuthModal'
@@ -128,6 +129,18 @@ export function Navbar() {
     setIsAuthOpen(true)
   }
 
+  const handleScrollToSearch = () => {
+    if (pathname === '/') {
+      const el = document.getElementById('story-search-input')
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        el.focus()
+      }
+    } else {
+      window.location.href = '/#story-search-input'
+    }
+  }
+
   return (
     <>
       <header className="sticky top-0 z-40 glass-panel border-b border-zinc-800/80 bg-[#09090b]/85 backdrop-blur-xl">
@@ -188,6 +201,16 @@ export function Navbar() {
             >
               <PenTool className="w-3.5 h-3.5 text-rose-400" /> {t.navWrite}
             </Link>
+
+            <button
+              type="button"
+              onClick={handleScrollToSearch}
+              className="px-3.5 py-1.5 rounded-lg text-xs font-medium text-zinc-300 hover:text-white hover:bg-zinc-800/60 transition-colors flex items-center gap-1.5 cursor-pointer"
+              title="Search Stories"
+            >
+              <Search className="w-3.5 h-3.5 text-rose-400" />
+              <span>{lang === 'hi' ? 'खोजें' : 'Search'}</span>
+            </button>
 
             {profile?.role === 'admin' && (
               <Link
@@ -334,6 +357,18 @@ export function Navbar() {
             >
               <PenTool className="w-4 h-4 text-rose-400" /> {t.navWrite}
             </Link>
+
+            <button
+              type="button"
+              onClick={() => {
+                setMobileMenuOpen(false)
+                handleScrollToSearch()
+              }}
+              className="w-full px-3 py-2 rounded-lg text-sm font-medium text-zinc-200 hover:bg-zinc-800 flex items-center gap-2 text-left cursor-pointer"
+            >
+              <Search className="w-4 h-4 text-rose-400" />
+              <span>{lang === 'hi' ? 'कहानियां खोजें' : 'Search Stories'}</span>
+            </button>
 
             {profile?.role === 'admin' && (
               <Link
